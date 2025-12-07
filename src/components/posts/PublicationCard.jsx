@@ -19,14 +19,22 @@ const PublicationCard = ({ post, onPostUpdate, onPostDelete }) => {
 
   const handleLike = async () => {
     try {
+      console.log('Toggling like for post:', post._id);
+      console.log('Current state - liked:', liked, 'count:', likeCount);
+      
       const response = await postService.toggleLike(post._id);
+      console.log('Like response:', response);
+      
       if (response.success) {
         setLiked(response.liked);
         setLikeCount(response.like_count);
+        console.log('New state - liked:', response.liked, 'count:', response.like_count);
+        toast.success(response.liked ? '❤️ Post aimé !' : 'Like retiré');
       }
     } catch (error) {
       console.error('Erreur like:', error);
-      toast.error('Erreur lors du like');
+      console.error('Error details:', error.response?.data);
+      toast.error(error.response?.data?.message || 'Erreur lors du like');
     }
   };
 

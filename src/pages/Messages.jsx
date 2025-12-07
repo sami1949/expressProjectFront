@@ -19,9 +19,22 @@ const Messages = () => {
   const currentUser = authService.getCurrentUser();
   const [searchParams] = useSearchParams();
   const userIdFromUrl = searchParams.get('userId');
+  const pollingIntervalRef = useRef(null);
+  const conversationsPollingRef = useRef(null);
 
   useEffect(() => {
     loadConversations();
+    
+    // Poll conversations every 10 seconds
+    conversationsPollingRef.current = setInterval(() => {
+      loadConversations();
+    }, 10000); // 10 seconds
+    
+    return () => {
+      if (conversationsPollingRef.current) {
+        clearInterval(conversationsPollingRef.current);
+      }
+    };
   }, []);
 
   // Auto-select conversation if userId in URL
@@ -59,7 +72,23 @@ const Messages = () => {
   useEffect(() => {
     if (selectedConversation) {
       loadMessages(selectedConversation._id);
+      
+      // Clear any existing polling interval
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      
+      // Poll messages every 3 seconds when conversation is selected
+      pollingIntervalRef.current = setInterval(() => {
+        loadMessages(selectedConversation._id);
+      }, 3000); // 3 seconds
     }
+    
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
   }, [selectedConversation]);
 
   useEffect(() => {
@@ -72,69 +101,108 @@ const Messages = () => {
 
   const loadConversations = async () => {
     try {
-      setLoading(true);
-      console.log('Loading conversations...');
-      const response = await messageService.getConversations();
-      console.log('Conversations response:', response);
-      
-      if (response.success) {
-        // Transform data to match expected format
-        const transformedConversations = response.data.map(conv => ({
-          _id: conv.userId,
-          autreUtilisateur: {
-            _id: conv.userId,
-            nom: conv.user.nom,
-            prenom: conv.user.prenom,
-            photo: conv.user.photo,
-            fullName: `${conv.user.prenom} ${conv.user.nom}`
-          },
-          dernierMessage: {
-            contenu: conv.lastMessage.contenu,
-            date_envoi: conv.lastMessage.date_envoi,
-            lu: conv.lastMessage.lu
-          },
-          messagesNonLus: conv.unreadCount || 0
-        }));
+      if (!loading) {
+        // Silent reload (don't show loading state)
+        const response = await messageService.getConversations();
         
-        console.log('Transformed conversations:', transformedConversations);
-        setConversations(transformedConversations);
+        if (response.success) {
+          const transformedConversations = response.data.map(conv => ({
+            _id: conv.userId,
+            autreUtilisateur: {
+              _id: conv.userId,
+              nom: conv.user.nom,
+              prenom: conv.user.prenom,
+              photo: conv.user.photo,
+              fullName: `${conv.user.prenom} ${conv.user.nom}`
+            },
+            dernierMessage: {
+              contenu: conv.lastMessage.contenu,
+              date_envoi: conv.lastMessage.date_envoi,
+              lu: conv.lastMessage.lu
+            },
+            messagesNonLus: conv.unreadCount || 0
+          }));
+          
+          setConversations(transformedConversations);
+        }
+      } else {
+        // First load
+        setLoading(true);
+        console.log('Loading conversations...');
+        const response = await messageService.getConversations();
+        console.log('Conversations response:', response);
+        
+        if (response.success) {
+          const transformedConversations = response.data.map(conv => ({
+            _id: conv.userId,
+            autreUtilisateur: {
+              _id: conv.userId,
+              nom: conv.user.nom,
+              prenom: conv.user.prenom,
+              photo: conv.user.photo,
+              fullName: `${conv.user.prenom} ${conv.user.nom}`
+            },
+            dernierMessage: {
+              contenu: conv.lastMessage.contenu,
+              date_envoi: conv.lastMessage.date_envoi,
+              lu: conv.lastMessage.lu
+            },
+            messagesNonLus: conv.unreadCount || 0
+          }));
+          
+          console.log('Transformed conversations:', transformedConversations);
+          setConversations(transformedConversations);
+        }
+        setLoading(false);
       }
     } catch (error) {
       console.error('Erreur chargement conversations:', error);
       console.error('Error details:', error.response?.data);
-      toast.error('Erreur lors du chargement des conversations');
-    } finally {
-      setLoading(false);
+      if (loading) {
+        toast.error('Erreur lors du chargement des conversations');
+        setLoading(false);
+      }
     }
   };
 
   const loadMessages = async (userId) => {
     try {
-      console.log('Loading messages for user:', userId);
       const response = await messageService.getConversationMessages(userId);
-      console.log('Messages response:', response);
       
       if (response.success) {
-        setMessages(response.data);
-        // Mark messages as read
-        response.data.forEach(msg => {
-          const currentUserId = currentUser.id || currentUser._id;
-          if (!msg.lu && msg.id_destinataire === currentUserId) {
-            messageService.markAsRead(msg._id).catch(err => 
-              console.error('Erreur marquage lu:', err)
-            );
-          }
-        });
+        // Only update if messages changed (avoid unnecessary re-renders)
+        const newMessagesJson = JSON.stringify(response.data.map(m => m._id));
+        const currentMessagesJson = JSON.stringify(messages.map(m => m._id));
+        
+        if (newMessagesJson !== currentMessagesJson) {
+          console.log('New messages detected, updating...');
+          setMessages(response.data);
+          
+          // Mark messages as read
+          response.data.forEach(msg => {
+            const currentUserId = currentUser.id || currentUser._id;
+            if (!msg.lu && msg.id_destinataire === currentUserId) {
+              messageService.markAsRead(msg._id).catch(err => 
+                console.error('Erreur marquage lu:', err)
+              );
+            }
+          });
+        }
       }
     } catch (error) {
       console.error('Erreur chargement messages:', error);
       console.error('Error details:', error.response?.data);
       // Don't show error if it's a new conversation with no messages yet
       if (error.response?.status !== 404) {
-        toast.error('Erreur lors du chargement des messages');
+        // Only show error on first load, not on polling
+        if (messages.length === 0) {
+          toast.error('Erreur lors du chargement des messages');
+        }
       }
       // For new conversations, just set empty messages
-      setMessages([]);
+      if (messages.length === 0) {
+        setMessages([]);
+      }
     }
   };
 
@@ -157,8 +225,12 @@ const Messages = () => {
       if (response.success) {
         setMessages([...messages, response.data]);
         setMessageText('');
-        // Reload conversations to update last message
+        // Reload conversations immediately to update last message
         loadConversations();
+        // Force reload messages to get the latest
+        setTimeout(() => {
+          loadMessages(selectedConversation._id);
+        }, 500);
         toast.success('Message envoyé !');
       }
     } catch (error) {
