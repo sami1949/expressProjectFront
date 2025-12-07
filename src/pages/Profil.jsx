@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
@@ -23,6 +23,8 @@ const Profil = () => {
     bio: '',
     photo: ''
   });
+  const [previewImage, setPreviewImage] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('id');
@@ -109,6 +111,40 @@ const Profil = () => {
     }));
   };
 
+  const handleImageClick = () => {
+    if (isOwnProfile && editing) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        toast.error('Veuillez sélectionner une image valide (JPEG, PNG, etc.)');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('La taille de l\'image ne doit pas dépasser 5MB');
+        return;
+      }
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewImage(e.target.result);
+        setFormData(prev => ({
+          ...prev,
+          photo: e.target.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -117,6 +153,7 @@ const Profil = () => {
       if (response.success) {
         setUser(response.data);
         setEditing(false);
+        setPreviewImage(null);
         toast.success('Profil mis à jour avec succès');
         
         // Update local storage
@@ -183,10 +220,21 @@ const Profil = () => {
             <div className="profil-info">
               <div className="profil-picture">
                 <img 
-                  src={user?.photo || '/default-avatar.jpg'} 
+                  src={previewImage || user?.photo || '/default-avatar.jpg'} 
                   alt="Profil" 
                   className="profil-avatar"
+                  onClick={handleImageClick}
+                  style={{ cursor: isOwnProfile && editing ? 'pointer' : 'default' }}
                 />
+                {isOwnProfile && editing && (
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                  />
+                )}
               </div>
               
               <div className="profil-details">
@@ -262,15 +310,22 @@ const Profil = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="photo">URL de la photo</label>
-                  <input
-                    type="text"
-                    id="photo"
-                    name="photo"
-                    value={formData.photo}
-                    onChange={handleInputChange}
-                    placeholder="https://..."
-                  />
+                  <label htmlFor="photo">Photo de profil</label>
+                  <div className="profile-photo-upload">
+                    <img 
+                      src={previewImage || formData.photo || '/default-avatar.jpg'} 
+                      alt="Preview" 
+                      className="profile-photo-preview"
+                      onClick={handleImageClick}
+                    />
+                    <button 
+                      type="button" 
+                      className="change-photo-btn"
+                      onClick={handleImageClick}
+                    >
+                      Changer la photo
+                    </button>
+                  </div>
                 </div>
 
                 <button type="submit" className="save-btn">
