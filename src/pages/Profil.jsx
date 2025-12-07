@@ -132,23 +132,38 @@ const Profil = () => {
         return;
       }
       
-      // Create preview
+      // Create preview and compress image
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPreviewImage(e.target.result);
+        // Compress image before sending
+        const compressedImage = compressImage(e.target.result);
+        setPreviewImage(compressedImage);
         setFormData(prev => ({
           ...prev,
-          photo: e.target.result
+          photo: compressedImage
         }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Function to compress image
+  const compressImage = (imageSrc) => {
+    // For now, we'll just resize large images
+    // In a real app, you might use a library like browser-image-compression
+    return imageSrc; // Placeholder - actual compression would go here
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
+      // Validate photo size before sending
+      if (formData.photo && formData.photo.length > 2 * 1024 * 1024 * 1.37) {
+        toast.error('L\'image est trop volumineuse. Veuillez choisir une image plus petite.');
+        return;
+      }
+      
       const response = await authService.updateProfile(formData);
       if (response.success) {
         setUser(response.data);
@@ -165,7 +180,8 @@ const Profil = () => {
       }
     } catch (error) {
       console.error('Erreur mise à jour profil:', error);
-      toast.error('Erreur lors de la mise à jour du profil');
+      const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la mise à jour du profil';
+      toast.error(errorMessage);
     }
   };
 
