@@ -7,6 +7,8 @@ import { authService } from './services/authService';
 // Pages
 import Connexion from './pages/Connexion';
 import Inscription from './pages/Inscription';
+import MotDePasseOublie from './pages/MotDePasseOublie';
+import ReinitialiserMotDePasse from './pages/ReinitialiserMotDePasse';
 import Accueil from './pages/Accueil';
 import Profil from './pages/Profil';
 import Messages from './pages/Messages';
@@ -27,6 +29,8 @@ function App() {
         {/* Routes publiques */}
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
+        <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+        <Route path="/reinitialiser-mot-de-passe/:resetToken" element={<ReinitialiserMotDePasse />} />
         
         {/* Routes protégées */}
         <Route path="/" element={
@@ -53,8 +57,12 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* Route 404 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Route 404 - Redirect to login if not authenticated, otherwise to home */}
+        <Route path="*" element={
+          authService.isAuthenticated() ? 
+          <Navigate to="/" replace /> : 
+          <Navigate to="/connexion" replace />
+        } />
       </Routes>
       
       <ToastContainer 
