@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -24,6 +24,19 @@ const Connexion = () => {
     resolver: yupResolver(schema),
   });
 
+  // Auto-clear error message after 60 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError('');
+        console.log('Error message cleared after 60 seconds');
+      }, 60000); // 60 seconds
+      
+      // Cleanup timer if component unmounts or error changes
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const onSubmit = async (data) => {
     setLoading(true);
     setError('');
@@ -36,7 +49,14 @@ const Connexion = () => {
         setError(result.message);
       }
     } catch (err) {
-      setError('Erreur de connexion'+err);
+      // Show a polite message for incorrect password
+      if (err.response?.status === 401) {
+        setError('Veuillez entrer le bon mot de passe.');
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Une erreur est survenue. Veuillez réessayer.');
+      }
     } finally {
       setLoading(false);
     }
