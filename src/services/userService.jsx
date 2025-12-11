@@ -7,6 +7,12 @@ export const userService = {
     return response.data;
   },
 
+  // Get user suggestions (for logged-in users)
+  async getUserSuggestions(page = 1, limit = 20) {
+    const response = await api.get(`/users/suggestions?page=${page}&limit=${limit}`);
+    return response.data;
+  },
+
   // Search users
   async searchUsers(query, role = '') {
     const params = new URLSearchParams();

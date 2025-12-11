@@ -115,17 +115,12 @@ const Amis = () => {
     console.log('Loading suggestions...');
     try {
       setLoading(true);
-      // Get all users except current user
-      const response = await userService.getAllUsers(1, 50);
+      // Get user suggestions from the new endpoint
+      const response = await userService.getUserSuggestions(1, 10);
       console.log('Suggestions response:', response);
       if (response.success) {
-        // Filter out current user and users already followed
-        const followedIds = Array.from(followingIds);
-        const suggestions = response.data.filter(u => 
-          u._id !== currentUser.id && !followedIds.includes(u._id)
-        );
-        setUsers(suggestions.slice(0, 10)); // Show only top 10 suggestions
-        setAllSuggestions(suggestions); // Store all suggestions for search reset
+        setUsers(response.data); // Already filtered by backend
+        setAllSuggestions(response.data); // Store all suggestions for search reset
       } else {
         console.error('Failed to load suggestions:', response.message);
         toast.error(response.message || 'Erreur lors du chargement des suggestions');
@@ -181,13 +176,14 @@ const Amis = () => {
       setLoading(true);
       
       if (activeTab === 'following') {
-        // Search following users
-        const response = await userService.searchUsers(query);
-        if (response.success) {
-          // Filter out current user
-          const filteredUsers = response.data.filter(u => u._id !== currentUser.id);
-          setFollowing(filteredUsers);
-        }
+        // Search following users locally (client-side search)
+        const filteredFollowing = allFollowing.filter(follow => {
+          const user = follow.suivi; // Following data is in suivi field
+          if (!user) return false;
+          const fullName = `${user.prenom || ''} ${user.nom || ''}`.toLowerCase();
+          return fullName.includes(query.toLowerCase());
+        });
+        setFollowing(filteredFollowing);
       } else if (activeTab === 'followers') {
         // Search followers - filter existing followers locally
         const filteredFollowers = allFollowers.filter(follow => {
@@ -229,13 +225,14 @@ const Amis = () => {
 
     try {
       if (tabType === 'following') {
-        // Search following users
-        const response = await userService.searchUsers(query);
-        if (response.success) {
-          // Filter out current user
-          const filteredUsers = response.data.filter(u => u._id !== currentUser.id);
-          setFollowing(filteredUsers);
-        }
+        // Search following users locally (client-side search)
+        const filteredFollowing = allFollowing.filter(follow => {
+          const user = follow.suivi; // Following data is in suivi field
+          if (!user) return false;
+          const fullName = `${user.prenom || ''} ${user.nom || ''}`.toLowerCase();
+          return fullName.includes(query.toLowerCase());
+        });
+        setFollowing(filteredFollowing);
       } else if (tabType === 'followers') {
         // Search followers - filter existing followers locally
         const filteredFollowers = allFollowers.filter(follow => {
@@ -262,8 +259,8 @@ const Amis = () => {
   const testApiConnectivity = async () => {
     try {
       console.log('Testing API connectivity...');
-      // Test basic user endpoint
-      const testResponse = await userService.getAllUsers(1, 5);
+      // Test user suggestions endpoint
+      const testResponse = await userService.getUserSuggestions(1, 5);
       console.log('API test response:', testResponse);
       if (testResponse.success) {
         toast.success('API connection successful');
@@ -338,30 +335,54 @@ const Amis = () => {
     return (
       <div key={userData._id} className="user-card">
         <div className="user-card-header">
-          <img 
-            src={userData.photo || 'https://via.placeholder.com/50?text=User'} 
-            alt={`${userData.prenom || ''} ${userData.nom || ''}`}
-            className="user-avatar"
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/50?text=User';
-            }}
-          />
+          <div className="user-avatar-container">
+            <img 
+              src={userData.photo || 'https://via.placeholder.com/80?text=User'} 
+              alt={`${userData.prenom || ''} ${userData.nom || ''}`}
+              className="user-avatar"
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/80?text=User';
+              }}
+            />
+            <div className="user-status-indicator"></div>
+          </div>
           <div className="user-info">
             <h3 className="user-name">
               {userData.prenom || ''} {userData.nom || ''}
             </h3>
-            {userData.bio && <p className="user-bio">{userData.bio}</p>}
+            {userData.bio ? (
+              <p className="user-bio">{userData.bio}</p>
+            ) : (
+              <p className="user-no-bio">Aucune biographie disponible</p>
+            )}
+            <div className="user-meta">
+              <span className="user-followers-count">
+                <i className="fas fa-users"></i> 
+                {userData.followerCount || 0} abonnés
+              </span>
+              <span className="user-posts-count">
+                <i className="fas fa-file-alt"></i> 
+                {userData.postCount || 0} posts
+              </span>
+            </div>
           </div>
         </div>
         
         <div className="user-card-footer">
-          <p className="user-email">{userData.email || ''}</p>
           {showFollowBtn && (
             <button 
               className={`follow-btn ${isFollowing ? 'following' : ''}`}
               onClick={() => handleFollow(userData._id, `${userData.prenom || ''} ${userData.nom || ''}`)}
             >
-              {isFollowing ? '✓ Abonné' : '+ Suivre'}
+              {isFollowing ? (
+                <>
+                  <i className="fas fa-check"></i> Abonné
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-plus"></i> Suivre
+                </>
+              )}
             </button>
           )}
         </div>
