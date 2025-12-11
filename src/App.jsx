@@ -7,6 +7,7 @@ import { authService } from './services/authService';
 // Pages
 import Connexion from './pages/Connexion';
 import Inscription from './pages/Inscription';
+import VerificationEmail from './pages/VerificationEmail';
 import MotDePasseOublie from './pages/MotDePasseOublie';
 import ReinitialiserMotDePasse from './pages/ReinitialiserMotDePasse';
 import Accueil from './pages/Accueil';
@@ -29,6 +30,7 @@ function App() {
         {/* Routes publiques */}
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
+        <Route path="/verification-email" element={<VerificationEmail />} />
         <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
         <Route path="/reinitialiser-mot-de-passe/:resetToken" element={<ReinitialiserMotDePasse />} />
         

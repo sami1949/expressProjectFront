@@ -53,6 +53,33 @@ export const authService = {
     }
   },
 
+  // Initier l'inscription avec vérification email
+  async initiateRegistration(userData) {
+    try {
+      const response = await api.post('/auth/initiate-registration', userData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Vérifier le code d'inscription
+  async verifyRegistrationCode(email, verificationCode) {
+    try {
+      const response = await api.post('/auth/verify-registration-code', { email, verificationCode });
+      if (response.data.success) {
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+      }
+      return response.data;
+    } catch (error) {
+      // If there's an error, ensure we clean up any partial auth data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw error;
+    }
+  },
+
   // Connexion
   async login(credentials) {
     try {
