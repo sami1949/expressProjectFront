@@ -21,10 +21,13 @@ const Profil = () => {
     nom: '',
     prenom: '',
     bio: '',
-    photo: ''
+    photo: '',
+    coverPhoto: '' // Added cover photo field
   });
   const [previewImage, setPreviewImage] = useState(null);
+  const [previewCover, setPreviewCover] = useState(null); // Added cover preview state
   const fileInputRef = useRef(null);
+  const coverFileInputRef = useRef(null); // Added cover file input ref
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('id');
@@ -83,7 +86,8 @@ const Profil = () => {
             nom: response.data.nom || '',
             prenom: response.data.prenom || '',
             bio: response.data.bio || '',
-            photo: response.data.photo || ''
+            photo: response.data.photo || '',
+            coverPhoto: response.data.coverPhoto || '/default-cover.jpg' // Added cover photo
           });
           
           // Fetch user's posts
@@ -117,6 +121,12 @@ const Profil = () => {
     }
   };
 
+  const handleCoverClick = () => {
+    if (isOwnProfile && editing) {
+      coverFileInputRef.current.click();
+    }
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -147,6 +157,35 @@ const Profil = () => {
     }
   };
 
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        toast.error('Veuillez sélectionner une image valide (JPEG, PNG, etc.)');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('La taille de l\'image ne doit pas dépasser 5MB');
+        return;
+      }
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const coverImage = e.target.result;
+        setPreviewCover(coverImage);
+        setFormData(prev => ({
+          ...prev,
+          coverPhoto: coverImage
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Function to compress image
   const compressImage = (imageSrc) => {
     // For now, we'll just resize large images
@@ -169,6 +208,7 @@ const Profil = () => {
         setUser(response.data);
         setEditing(false);
         setPreviewImage(null);
+        setPreviewCover(null); // Reset cover preview
         toast.success('Profil mis à jour avec succès');
         
         // Update local storage
@@ -230,7 +270,22 @@ const Profil = () => {
         <main className="profil-content">
           <div className="profil-header">
             <div className="cover-photo">
-              <img src="/default-cover.jpg" alt="Cover" className="cover-img" />
+              <img 
+                src={previewCover || user?.coverPhoto || '/default-cover.jpg'} 
+                alt="Cover" 
+                className="cover-img"
+                onClick={isOwnProfile && editing ? handleCoverClick : undefined}
+                style={{ cursor: isOwnProfile && editing ? 'pointer' : 'default' }}
+              />
+              {isOwnProfile && editing && (
+                <input
+                  type="file"
+                  ref={coverFileInputRef}
+                  onChange={handleCoverChange}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
+              )}
             </div>
             
             <div className="profil-info">
@@ -340,6 +395,26 @@ const Profil = () => {
                       onClick={handleImageClick}
                     >
                       Changer la photo
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="coverPhoto">Photo de couverture</label>
+                  <div className="profile-photo-upload">
+                    <img 
+                      src={previewCover || formData.coverPhoto || '/default-cover.jpg'} 
+                      alt="Cover Preview" 
+                      className="profile-photo-preview"
+                      style={{ width: '100%', height: '150px', borderRadius: '8px' }}
+                      onClick={handleCoverClick}
+                    />
+                    <button 
+                      type="button" 
+                      className="change-photo-btn"
+                      onClick={handleCoverClick}
+                    >
+                      Changer la photo de couverture
                     </button>
                   </div>
                 </div>
