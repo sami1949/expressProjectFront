@@ -6,7 +6,7 @@ import { authService } from '../../services/authService';
 import { toast } from 'react-toastify';
 import './PublicationCard.css';
 
-const PublicationCard = ({ post, onPostUpdate, onPostDelete }) => {
+const PublicationCard = ({ post, onPostUpdate, onPostDelete, singlePostMode = false }) => {
   const [liked, setLiked] = useState(post.liked);
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [showComments, setShowComments] = useState(false);
@@ -105,14 +105,14 @@ const PublicationCard = ({ post, onPostUpdate, onPostDelete }) => {
   const handleAuthorClick = () => {
     const authorId = post.auteur?._id || post.id_user;
     if (authorId && authorId !== currentUser?.id) {
-      navigate(`/profil?id=${authorId}`);
+      navigate(`/profil/${authorId}`);
     } else if (authorId === currentUser?.id) {
       navigate('/profil');
     }
   };
 
   return (
-    <div className="publication-card">
+    <div className={`publication-card ${singlePostMode ? 'single-post-mode' : ''}`}>
       <div className="post-header">
         <div className="author-info">
           <img 
@@ -135,7 +135,7 @@ const PublicationCard = ({ post, onPostUpdate, onPostDelete }) => {
             </span>
           </div>
         </div>
-        {isOwner && (
+        {isOwner && !singlePostMode && (
           <button className="delete-post-btn" onClick={handleDeletePost}>
             ✕
           </button>

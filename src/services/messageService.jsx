@@ -1,11 +1,21 @@
 import api from './api';
 
 export const messageService = {
-  // Send a message
+  // Send a message (text only)
   async sendMessage(receiverId, contenu) {
     const response = await api.post('/messages', {
       id_destinataire: receiverId,
-      contenu
+      contenu: contenu || ''
+    });
+    return response.data;
+  },
+  
+  // Send a message with image
+  async sendMessageWithImage(receiverId, contenu, image) {
+    const response = await api.post('/messages', {
+      id_destinataire: receiverId,
+      contenu: contenu || '',
+      image: image || null
     });
     return response.data;
   },

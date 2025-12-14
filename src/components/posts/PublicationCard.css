@@ -56,6 +56,33 @@
   transform: scaleX(1);
 }
 
+/* Single Post Mode */
+.publication-card.single-post-mode {
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15),
+              0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(102, 126, 234, 0.15);
+}
+
+.publication-card.single-post-mode:hover {
+  transform: none;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15),
+              0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.publication-card.single-post-mode .post-image {
+  max-height: 700px;
+}
+
+/* Responsive for single post mode */
+@media (max-width: 768px) {
+  .publication-card.single-post-mode {
+    margin: 10px;
+    border-radius: 16px;
+  }
+}
+
 /* Post Header */
 .post-header {
   display: flex;

@@ -14,6 +14,7 @@ import Accueil from './pages/Accueil';
 import Profil from './pages/Profil';
 import Messages from './pages/Messages';
 import Amis from './pages/Amis';
+import Notifications from './pages/Notifications';
 
 // Composant de route protégée
 const ProtectedRoute = ({ children }) => {
@@ -47,7 +48,19 @@ function App() {
           </ProtectedRoute>
         } />
         
+        <Route path="/profil/:userId" element={
+          <ProtectedRoute>
+            <Profil />
+          </ProtectedRoute>
+        } />
+        
         <Route path="/messages" element={
+          <ProtectedRoute>
+            <Messages />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/messages/:userId" element={
           <ProtectedRoute>
             <Messages />
           </ProtectedRoute>
@@ -56,6 +69,18 @@ function App() {
         <Route path="/amis" element={
           <ProtectedRoute>
             <Amis />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/posts/:postId" element={
+          <ProtectedRoute>
+            <Accueil />
           </ProtectedRoute>
         } />
         

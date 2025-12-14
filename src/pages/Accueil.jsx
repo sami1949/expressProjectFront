@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import PublicationForm from '../components/posts/PublicationForm';
@@ -8,10 +9,12 @@ import { toast } from 'react-toastify';
 import './Acceuil.css';
 
 const Accueil = () => {
+  const { postId } = useParams(); // Get postId from URL params
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [singlePost, setSinglePost] = useState(null); // For displaying a single post
 
   // Fetch posts from backend
   const fetchPosts = async (pageNum = 1) => {
@@ -37,9 +40,35 @@ const Accueil = () => {
     }
   };
 
+  // Fetch a single post by ID
+  const fetchSinglePost = async (id) => {
+    try {
+      setLoading(true);
+      const response = await postService.getPostById(id);
+      
+      if (response.success) {
+        setSinglePost(response.data);
+        setPosts([response.data]); // Display only this post
+      } else {
+        toast.error('Publication non trouvée');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la publication:', error);
+      toast.error('Impossible de charger la publication');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    if (postId) {
+      // If postId is present in URL, fetch only that post
+      fetchSinglePost(postId);
+    } else {
+      // Otherwise, fetch all posts
+      fetchPosts();
+    }
+  }, [postId]);
 
   const handleNewPost = (newPost) => {
     setPosts([newPost, ...posts]);
@@ -56,10 +85,16 @@ const Accueil = () => {
     setPosts(posts.map(post => 
       post._id === updatedPost._id ? updatedPost : post
     ));
+    if (singlePost && singlePost._id === updatedPost._id) {
+      setSinglePost(updatedPost);
+    }
   };
 
   const handlePostDelete = (postId) => {
     setPosts(posts.filter(post => post._id !== postId));
+    if (singlePost && singlePost._id === postId) {
+      setSinglePost(null);
+    }
     toast.success('Publication supprimée');
   };
 
@@ -71,7 +106,8 @@ const Accueil = () => {
         <Sidebar />
         
         <main className="main-content">
-          <PublicationForm onPostCreated={handleNewPost} />
+          {/* Only show publication form if not viewing a single post */}
+          {!postId && <PublicationForm onPostCreated={handleNewPost} />}
           
           {loading && posts.length === 0 ? (
             <div className="loading-posts">
@@ -83,9 +119,11 @@ const Accueil = () => {
                 posts={posts}
                 onPostUpdate={handlePostUpdate}
                 onPostDelete={handlePostDelete}
+                singlePostMode={!!postId} // Pass flag for single post mode
               />
               
-              {hasMore && (
+              {/* Only show load more button if not viewing a single post */}
+              {!postId && hasMore && (
                 <button 
                   className="load-more-btn" 
                   onClick={handleLoadMore}
