@@ -29,6 +29,11 @@ const Sidebar = () => {
             <span>Messages</span>
           </Link>
           
+          <Link to="/notifications" className={`nav-item ${isActive('/notifications')}`}>
+            <span className="nav-icon">🔔</span>
+            <span>Notifications</span>
+          </Link>
+          
           <Link to="/profil" className={`nav-item ${isActive('/profil')}`}>
             <span className="nav-icon">👤</span>
             <span>Profil</span>

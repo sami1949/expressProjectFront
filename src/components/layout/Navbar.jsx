@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { notificationService } from '../../services/notificationService';
 import './Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const dropdownRef = useRef(null);
   const user = authService.getCurrentUser();
   
@@ -18,6 +20,29 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Récupérer le nombre de notifications non lues
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const response = await notificationService.getUnreadCount();
+        if (response.success) {
+          setNotificationCount(response.count);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du nombre de notifications:', error);
+      }
+    };
+
+    if (user) {
+      fetchNotificationCount();
+      
+      // Actualiser le compteur toutes les 30 secondes
+      const interval = setInterval(fetchNotificationCount, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,12 +65,21 @@ const Navbar = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  const handleNotificationClick = () => {
+    setDropdownOpen(false);
+    navigate('/notifications');
+  };
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="navbar-logo">
           <Link to="/">
-            <span className="logo-text">Mini-Facebook</span>
+            <img 
+              src="/Images/logoFcb.png" 
+              alt="Mini-Facebook Logo" 
+              className="navbar-logo-img"
+            />
           </Link>
         </div>
 
@@ -103,11 +137,22 @@ const Navbar = () => {
 
                 <div className="dropdown-divider"></div>
 
-                <Link to="/notifications" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                <button 
+                  className="dropdown-item" 
+                  onClick={handleNotificationClick}
+                  style={{ 
+                    border: 'none', 
+                    background: 'none', 
+                    width: '100%', 
+                    textAlign: 'left' 
+                  }}
+                >
                   <span className="dropdown-item-icon">🔔</span>
                   <span>Notifications</span>
-                  <span className="notification-badge">3</span>
-                </Link>
+                  {notificationCount > 0 && (
+                    <span className="notification-badge">{notificationCount}</span>
+                  )}
+                </button>
 
                 <Link to="/messages" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">💬</span>
@@ -124,7 +169,7 @@ const Navbar = () => {
                 <div className="dropdown-divider"></div>
 
                 <button 
-                  className="dropdown-item logout" 
+                  className="dropdown-item logout styled-logout" 
                   onClick={() => {
                     setDropdownOpen(false);
                     handleLogout();

@@ -1,4 +1,15 @@
 /* 🚀 NAVBAR EXTRAORDINAIRE V2 - DESIGN PREMIUM */
+
+/* Logo Image */
+.navbar-logo-img {
+  height: 95px;
+  width: auto;
+}
+
+.navbar-logo a:hover .navbar-logo-img {
+  transform: translateY(-2px);
+}
+
 .navbar {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 250, 0.99) 100%);
   backdrop-filter: blur(20px) saturate(180%);
@@ -238,6 +249,24 @@
   align-items: center;
   justify-content: center;
 }
+.notification-badge {
+  background: #ff4444;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  margin-left: auto;
+  min-width: 20px;
+  text-align: center;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
 
 /* Divider */
 .dropdown-divider {
@@ -246,14 +275,55 @@
   margin: 8px 0;
 }
 
-/* Logout Button Special */
-.dropdown-item.logout {
-  color: #ef4444;
+/* Styled Logout Button - Red with Animation and Centering */
+.dropdown-item.logout.styled-logout {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
   font-weight: 600;
+  justify-content: center;
+  margin: 8px 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
 }
 
-.dropdown-item.logout:hover {
-  background: rgba(239, 68, 68, 0.08);
+.dropdown-item.logout.styled-logout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.dropdown-item.logout.styled-logout:hover::before {
+  left: 100%;
+}
+
+.dropdown-item.logout.styled-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, #ff5252, #d32f2f);
+}
+
+.dropdown-item.logout.styled-logout .dropdown-item-icon {
+  animation: pulseIcon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }
 
 /* Notification Badge */
