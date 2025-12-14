@@ -48,7 +48,7 @@ const Inscription = () => {
     try {
       const { confirmPassword, ...registerData } = data;
       
-      // Initiate registration with email verificat ion
+      // Initiate registration with email verification
       const result = await authService.initiateRegistration(registerData);
       
       if (result.success) {
