@@ -15,6 +15,7 @@ import Profil from './pages/Profil';
 import Messages from './pages/Messages';
 import Amis from './pages/Amis';
 import Notifications from './pages/Notifications';
+import Parametres from './pages/Parametres';
 
 // Composant de route protégée
 const ProtectedRoute = ({ children }) => {
@@ -75,6 +76,12 @@ function App() {
         <Route path="/notifications" element={
           <ProtectedRoute>
             <Notifications />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/parametres" element={
+          <ProtectedRoute>
+            <Parametres />
           </ProtectedRoute>
         } />
         

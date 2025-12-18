@@ -6,9 +6,11 @@ import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Messages.css';
 
 const Messages = () => {
+  const { t } = useLanguage();
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -76,7 +78,7 @@ const Messages = () => {
       }
     } catch (error) {
       console.error('Erreur chargement utilisateur:', error);
-      toast.error('Impossible de charger l\'utilisateur');
+      toast.error(t('errorLoadingUser'));
     }
   };
 
@@ -166,7 +168,7 @@ const Messages = () => {
     } catch (error) {
       console.error('Erreur chargement conversations:', error);
       if (loading) {
-        toast.error('Erreur lors du chargement des conversations');
+        toast.error(t('errorLoadingConversations'));
         setLoading(false);
       }
     }
@@ -197,7 +199,7 @@ const Messages = () => {
       console.error('Erreur chargement messages:', error);
       if (error.response?.status !== 404) {
         if (messages.length === 0) {
-          toast.error('Erreur lors du chargement des messages');
+          toast.error(t('errorLoadingMessages'));
         }
       }
       if (messages.length === 0) {
@@ -210,12 +212,12 @@ const Messages = () => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.match('image.*')) {
-        toast.error('Veuillez sélectionner une image valide (JPEG, PNG, etc.)');
+        toast.error(t('selectValidImage'));
         return;
       }
       
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('La taille de l\'image ne doit pas dépasser 5MB');
+        toast.error(t('imageSizeLimit'));
         return;
       }
       
@@ -233,12 +235,12 @@ const Messages = () => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.match('audio.*')) {
-        toast.error('Veuillez sélectionner un fichier audio valide');
+        toast.error(t('selectValidAudio'));
         return;
       }
       
       if (file.size > 10 * 1024 * 1024) {
-        toast.error('La taille de l\'audio ne doit pas dépasser 10MB');
+        toast.error(t('audioSizeLimit'));
         return;
       }
       
@@ -301,16 +303,16 @@ const Messages = () => {
             console.log('Base64 length:', base64data.length);
             setAudioPreview(base64data);
             setAudioFile(base64data);
-            toast.success('Audio enregistré avec succès !');
+            toast.success(t('audioRecordedSuccessfully'));
           };
           reader.onerror = () => {
             console.error('Erreur FileReader');
-            toast.error('Erreur lors de la conversion de l\'audio');
+            toast.error(t('errorConvertingAudio'));
           };
           reader.readAsDataURL(audioBlob);
         } else {
           console.log('Aucune donnée audio enregistrée');
-          toast.error('Aucune donnée audio enregistrée. Veuillez réessayer.');
+          toast.error(t('noAudioDataRecorded'));
         }
         
         // Stop all tracks
@@ -334,16 +336,16 @@ const Messages = () => {
       }, 1000);
       
       console.log('Enregistrement démarré avec timeslice de 100ms');
-      toast.info('Enregistrement en cours...', { autoClose: 1000 });
+      toast.info(t('recordingInProgress'), { autoClose: 1000 });
       
     } catch (error) {
       console.error('Erreur enregistrement audio:', error);
       if (error.name === 'NotAllowedError') {
-        toast.error('Permission refusée. Veuillez autoriser l\'accès au microphone.');
+        toast.error(t('microphonePermissionDenied'));
       } else if (error.name === 'NotFoundError') {
-        toast.error('Aucun microphone détecté sur votre appareil.');
+        toast.error(t('noMicrophoneDetected'));
       } else {
-        toast.error('Impossible d\'accéder au microphone.');
+        toast.error(t('cannotAccessMicrophone'));
       }
       setIsRecording(false);
     }
@@ -353,7 +355,7 @@ const Messages = () => {
     if (mediaRecorder && isRecording) {
       // Vérifier la durée minimale (1 seconde)
       if (recordingTime < 1) {
-        toast.warning('Enregistrement trop court. Minimum 1 seconde.');
+        toast.warning(t('recordingTooShort'));
         return;
       }
       
@@ -381,7 +383,7 @@ const Messages = () => {
         mediaStreamRef.current.getTracks().forEach(track => track.stop());
         mediaStreamRef.current = null;
       }
-      toast.info('Enregistrement annulé');
+      toast.info(t('recordingCancelled'));
     }
   };
 
@@ -489,12 +491,12 @@ const Messages = () => {
         setTimeout(() => {
           loadMessages(selectedConversation._id);
         }, 500);
-        toast.success('Message envoyé !');
+        toast.success(t('messageSent'));
       }
     } catch (error) {
       console.error('Erreur envoi message:', error);
       console.error('Détails erreur:', error.response?.data);
-      toast.error(error.response?.data?.message || 'Erreur lors de l\'envoi du message');
+      toast.error(error.response?.data?.message || t('errorSendingMessage'));
     } finally {
       setSending(false);
     }
@@ -508,10 +510,10 @@ const Messages = () => {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return 'A l\'instant';
-    if (minutes < 60) return `Il y a ${minutes} min`;
-    if (hours < 24) return `Il y a ${hours}h`;
-    if (days < 7) return `Il y a ${days}j`;
+    if (minutes < 1) return t('justNow');
+    if (minutes < 60) return t('minutesAgo').replace('{minutes}', minutes);
+    if (hours < 24) return t('hoursAgo').replace('{hours}', hours);
+    if (days < 7) return t('daysAgo').replace('{days}', days);
     return date.toLocaleDateString('fr-FR');
   };
 
@@ -532,12 +534,12 @@ const Messages = () => {
           <div className="messages-wrapper">
             {/* Conversations List */}
             <div className="conversations-list">
-              <h2 className="conversations-title">Messages</h2>
+              <h2 className="conversations-title">{t('messages')}</h2>
               
               {loading ? (
-                <p className="loading-text">Chargement...</p>
+                <p className="loading-text">{t('loading')}</p>
               ) : conversations.length === 0 ? (
-                <p className="no-conversations">Aucune conversation</p>
+                <p className="no-conversations">{t('noConversations')}</p>
               ) : (
                 <div className="conversations">
                   {conversations.map(conv => {
@@ -565,11 +567,11 @@ const Messages = () => {
                           </h4>
                           <p className="conversation-last-message">
                             {conv.dernierMessage?.audio ? (
-                              '🎵 Message vocal'
+                              '🎵 ' + t('voiceMessage')
                             ) : conv.dernierMessage?.image ? (
-                              '📷 Photo'
+                              '📷 ' + t('photo')
                             ) : (
-                              conv.dernierMessage?.contenu || 'Aucun message'
+                              conv.dernierMessage?.contenu || t('noMessage')
                             )}
                           </p>
                         </div>
@@ -587,7 +589,7 @@ const Messages = () => {
             <div className="messages-area">
               {!selectedConversation ? (
                 <div className="no-conversation-selected">
-                  <p>Sélectionnez une conversation pour commencer</p>
+                  <p>{t('selectConversationToStart')}</p>
                 </div>
               ) : (
                 <>
@@ -615,7 +617,7 @@ const Messages = () => {
                   <div className="messages-list">
                     {messages.length === 0 ? (
                       <div className="no-messages">
-                        <p>Aucun message. Commencez la conversation!</p>
+                        <p>{t('noMessagesStartConversation')}</p>
                       </div>
                     ) : (
                       messages.map(msg => {
@@ -649,7 +651,7 @@ const Messages = () => {
                                     <source src={msg.audio} type="audio/ogg" />
                                     <source src={msg.audio} type="audio/mp4" />
                                     <source src={msg.audio} type="audio/mpeg" />
-                                    Votre navigateur ne supporte pas l'élément audio.
+                                    {t('browserDoesNotSupportAudio')}
                                   </audio>
                                 </div>
                               )}
@@ -690,7 +692,7 @@ const Messages = () => {
                               <source src={audioPreview} type="audio/ogg" />
                               <source src={audioPreview} type="audio/mp4" />
                               <source src={audioPreview} type="audio/mpeg" />
-                              Votre navigateur ne supporte pas l'élément audio.
+                              {t('browserDoesNotSupportAudio')}
                             </audio>
                             <button 
                               type="button" 
@@ -708,14 +710,14 @@ const Messages = () => {
                     {isRecording && (
                       <div className="recording-indicator">
                         <div className="recording-dot"></div>
-                        <span className="recording-text">Enregistrement vocal en cours...</span>
+                        <span className="recording-text">{t('voiceRecordingInProgress')}</span>
                         <span className="recording-timer">{formatRecordingTime(recordingTime)}</span>
                         <button 
                           type="button" 
                           className="cancel-recording-btn"
                           onClick={cancelRecording}
                         >
-                          Annuler
+                          {t('cancel')}
                         </button>
                       </div>
                     )}
@@ -723,7 +725,7 @@ const Messages = () => {
                     <div className="message-input-container">
                       <input
                         type="text"
-                        placeholder="Écrivez un message..."
+                        placeholder={t('writeAMessage')}
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
                         className="message-input"
@@ -750,7 +752,7 @@ const Messages = () => {
                         className="attach-button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isRecording}
-                        title="Joindre une image"
+                        title={t('attachImage')}
                       >
                         📷
                       </button>
@@ -758,7 +760,7 @@ const Messages = () => {
                         type="button"
                         className={`attach-button audio-button ${isRecording ? 'recording' : ''}`}
                         onClick={isRecording ? stopRecording : startRecording}
-                        title={isRecording ? "Arrêter l'enregistrement" : "Enregistrer un message vocal"}
+                        title={isRecording ? t('stopRecording') : t('recordVoiceMessage')}
                       >
                         {isRecording ? '🛑' : '🎤'}
                       </button>
@@ -766,7 +768,7 @@ const Messages = () => {
                         type="submit"
                         disabled={sending || (!messageText.trim() && !imageFile && !audioFile) || isRecording}
                         className="send-btn"
-                        title="Envoyer le message"
+                        title={t('sendMessage')}
                       >
                         {sending ? '⏳' : '➤'}
                       </button>

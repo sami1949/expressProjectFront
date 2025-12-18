@@ -8,9 +8,11 @@ import { postService } from '../services/postService';
 import { userService } from '../services/userService';
 import { followService } from '../services/followService';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Profil.css';
 
 const Profil = () => {
+  const { t } = useLanguage();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +73,7 @@ const Profil = () => {
             setPosts(postsResponse.data);
           }
         } else {
-          toast.error(response.message || 'Utilisateur introuvable');
+          toast.error(response.message || t('userNotFound'));
         }
       } else {
         // Viewing own profile
@@ -98,9 +100,9 @@ const Profil = () => {
         }
       }
     } catch (error) {
-      console.error('Erreur chargement profil:', error);
+      console.error(t('errorLoadingProfile'), error);
       console.error('Error details:', error.response?.data);
-      const errorMsg = error.response?.data?.message || error.message || 'Erreur lors du chargement du profil';
+      const errorMsg = error.response?.data?.message || error.message || t('errorLoadingProfile');
       toast.error(errorMsg);
     } finally {
       setLoading(false);
@@ -132,13 +134,13 @@ const Profil = () => {
     if (file) {
       // Validate file type
       if (!file.type.match('image.*')) {
-        toast.error('Veuillez sélectionner une image valide (JPEG, PNG, etc.)');
+        toast.error(t('selectValidImage'));
         return;
       }
       
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('La taille de l\'image ne doit pas dépasser 5MB');
+        toast.error(t('imageSizeLimit'));
         return;
       }
       
@@ -162,13 +164,13 @@ const Profil = () => {
     if (file) {
       // Validate file type
       if (!file.type.match('image.*')) {
-        toast.error('Veuillez sélectionner une image valide (JPEG, PNG, etc.)');
+        toast.error(t('selectValidImage'));
         return;
       }
       
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('La taille de l\'image ne doit pas dépasser 5MB');
+        toast.error(t('imageSizeLimit'));
         return;
       }
       
@@ -199,7 +201,7 @@ const Profil = () => {
     try {
       // Validate photo size before sending
       if (formData.photo && formData.photo.length > 2 * 1024 * 1024 * 1.37) {
-        toast.error('L\'image est trop volumineuse. Veuillez choisir une image plus petite.');
+        toast.error(t('imageTooLarge'));
         return;
       }
       
@@ -209,7 +211,7 @@ const Profil = () => {
         setEditing(false);
         setPreviewImage(null);
         setPreviewCover(null); // Reset cover preview
-        toast.success('Profil mis à jour avec succès');
+        toast.success(t('profileUpdatedSuccessfully'));
         
         // Update local storage
         const currentUser = authService.getCurrentUser();
@@ -219,8 +221,8 @@ const Profil = () => {
         }));
       }
     } catch (error) {
-      console.error('Erreur mise à jour profil:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la mise à jour du profil';
+      console.error(t('errorUpdatingProfile'), error);
+      const errorMessage = error.response?.data?.message || error.message || t('errorUpdatingProfile');
       toast.error(errorMessage);
     }
   };
@@ -235,13 +237,13 @@ const Profil = () => {
       if (response.success) {
         setIsFollowing(!isFollowing);
         const message = response.status === 'following' || response.status === 'accepted' 
-          ? 'Vous suivez maintenant cet utilisateur' 
-          : 'Vous ne suivez plus cet utilisateur';
+          ? t('nowFollowingUser') 
+          : t('unfollowedUser');
         toast.success(message);
       }
     } catch (error) {
-      console.error('Erreur follow:', error);
-      toast.error('Erreur lors de l\'action');
+      console.error(t('errorFollowingAction'), error);
+      toast.error(t('errorFollowingAction'));
     }
   };
 
@@ -254,7 +256,7 @@ const Profil = () => {
       <div className="profil-page">
         <Navbar />
         <div className="loading-container">
-          <p>Chargement du profil...</p>
+          <p>{t('loadingProfile')}</p>
         </div>
       </div>
     );
@@ -321,7 +323,7 @@ const Profil = () => {
                   className="edit-profil-btn"
                   onClick={() => setEditing(!editing)}
                 >
-                  {editing ? 'Annuler' : '✏️ Modifier le profil'}
+                  {editing ? t('cancel') : '✏️ ' + t('editProfile')}
                 </button>
               ) : (
                 <div className="profile-actions">
@@ -329,13 +331,13 @@ const Profil = () => {
                     className={`follow-btn ${isFollowing ? 'following' : ''}`}
                     onClick={handleFollow}
                   >
-                    {isFollowing ? '✓ Abonné' : '+ Suivre'}
+                    {isFollowing ? '✓ ' + t('following') : '+ ' + t('follow')}
                   </button>
                   <button 
                     className="message-btn"
                     onClick={handleSendMessage}
                   >
-                    💬 Message
+                    💬 {t('message')}
                   </button>
                 </div>
               )}
@@ -344,10 +346,10 @@ const Profil = () => {
 
           {isOwnProfile && editing && (
             <div className="profil-edit-form">
-              <h2>Modifier le profil</h2>
+              <h2>{t('editProfile')}</h2>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label htmlFor="prenom">Prénom</label>
+                  <label htmlFor="prenom">{t('firstName')}</label>
                   <input
                     type="text"
                     id="prenom"
@@ -358,7 +360,7 @@ const Profil = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="nom">Nom</label>
+                  <label htmlFor="nom">{t('lastName')}</label>
                   <input
                     type="text"
                     id="nom"
@@ -369,19 +371,19 @@ const Profil = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="bio">Bio</label>
+                  <label htmlFor="bio">{t('bio')}</label>
                   <textarea
                     id="bio"
                     name="bio"
                     value={formData.bio}
                     onChange={handleInputChange}
                     rows="4"
-                    placeholder="Parlez de vous..."
+                    placeholder={t('talkAboutYourself')}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="photo">Photo de profil</label>
+                  <label htmlFor="photo">{t('profilePicture')}</label>
                   <div className="profile-photo-upload">
                     <img 
                       src={previewImage || formData.photo || '/default-avatar.jpg'} 
@@ -394,13 +396,13 @@ const Profil = () => {
                       className="change-photo-btn"
                       onClick={handleImageClick}
                     >
-                      Changer la photo
+                      {t('changePhoto')}
                     </button>
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="coverPhoto">Photo de couverture</label>
+                  <label htmlFor="coverPhoto">{t('coverPhoto')}</label>
                   <div className="profile-photo-upload">
                     <img 
                       src={previewCover || formData.coverPhoto || '/default-cover.jpg'} 
@@ -414,20 +416,20 @@ const Profil = () => {
                       className="change-photo-btn"
                       onClick={handleCoverClick}
                     >
-                      Changer la photo de couverture
+                      {t('changeCoverPhoto')}
                     </button>
                   </div>
                 </div>
 
                 <button type="submit" className="save-btn">
-                  Enregistrer les modifications
+                  {t('saveChanges')}
                 </button>
               </form>
             </div>
           )}
 
           <div className="profil-posts">
-            <h2>Publications ({posts.length})</h2>
+            <h2>{t('posts')} ({posts.length})</h2>
             <PublicationList 
               posts={posts}
               onPostDelete={handlePostDelete}

@@ -6,10 +6,12 @@ import PublicationForm from '../components/posts/PublicationForm';
 import PublicationList from '../components/posts/PublicationList';
 import { postService } from '../services/postService';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Acceuil.css';
 
 const Accueil = () => {
   const { postId } = useParams(); // Get postId from URL params
+  const { t } = useLanguage();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -111,7 +113,7 @@ const Accueil = () => {
           
           {loading && posts.length === 0 ? (
             <div className="loading-posts">
-              <p>Chargement des publications...</p>
+              <p>{t('loadingPosts')}</p>
             </div>
           ) : (
             <>
@@ -129,7 +131,7 @@ const Accueil = () => {
                   onClick={handleLoadMore}
                   disabled={loading}
                 >
-                  {loading ? 'Chargement...' : 'Voir plus de publications'}
+                  {loading ? t('loading') : t('loadMorePosts')}
                 </button>
               )}
             </>

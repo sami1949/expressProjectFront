@@ -4,6 +4,7 @@
   background: #f8f9fd;
   padding-top: 0;
   position: relative;
+  background: var(--background-color);
 }
 
 .amis-container {
@@ -47,6 +48,7 @@
   position: relative;
   display: inline-block;
   padding-bottom: 16px;
+  color: var(--text-color);
 }
 
 .page-title::after {
@@ -77,6 +79,8 @@
   padding: 8px;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
 }
 
 .tab {
@@ -92,11 +96,13 @@
   position: relative;
   flex: 1;
   white-space: nowrap;
+  color: var(--text-secondary);
 }
 
 .tab:hover {
   color: #667eea;
   background: rgba(102, 126, 234, 0.06);
+  color: var(--primary-color);
 }
 
 .tab.active {
@@ -114,6 +120,8 @@
   border: 1px solid rgba(102, 126, 234, 0.08);
   position: relative;
   overflow: hidden;
+  background: var(--card-bg);
+  border-color: var(--border-color);
 }
 
 .section-header {
@@ -126,6 +134,7 @@
   font-weight: 700;
   margin: 0 0 8px 0;
   color: #1e293b;
+  color: var(--text-color);
 }
 
 .section-header p {
@@ -133,6 +142,7 @@
   color: #64748b;
   margin: 0;
   font-weight: 400;
+  color: var(--text-secondary);
 }
 
 /* Search Bar */
@@ -156,16 +166,23 @@
   transition: all 0.2s ease;
   background: rgba(248, 249, 253, 0.5);
   color: #1e293b;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
 }
 
 .search-input::placeholder {
   color: #94a3b8;
+  color: var(--text-light);
 }
 
 .search-input:focus {
   outline: none;
   border-color: #667eea;
   background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  border-color: var(--primary-color);
+  background: var(--card-bg);
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
@@ -181,6 +198,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   white-space: nowrap;
+  background: var(--gradient-primary);
 }
 
 .search-btn:hover:not(:disabled) {
@@ -205,12 +223,17 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  background: rgba(102, 126, 234, 0.08);
+  color: var(--primary-color);
+  border-color: var(--border-color);
 }
 
 .reset-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   background: rgba(102, 126, 234, 0.12);
   border-color: #667eea;
+  background: rgba(102, 126, 234, 0.12);
+  border-color: var(--primary-color);
 }
 
 .reset-btn:disabled {
@@ -231,6 +254,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   margin-top: 20px;
+  background: var(--gradient-primary);
 }
 
 .retry-btn:hover {
@@ -258,6 +282,8 @@
   border: 1px solid rgba(102, 126, 234, 0.08);
   position: relative;
   overflow: hidden;
+  background: var(--card-bg);
+  border-color: var(--border-color);
 }
 
 .user-card::before {
@@ -360,6 +386,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  color: var(--text-color);
 }
 
 .user-bio {
@@ -371,6 +398,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  color: var(--text-secondary);
 }
 
 .user-no-bio {
@@ -378,6 +406,7 @@
   color: #94a3b8;
   font-style: italic;
   margin: 0 0 10px 0;
+  color: var(--text-light);
 }
 
 .user-meta {
@@ -394,6 +423,7 @@
   font-size: 12px;
   color: #64748b;
   font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .user-card-footer {
@@ -403,6 +433,7 @@
   border-top: 1px solid rgba(102, 126, 234, 0.08);
   padding-top: 18px;
   margin-top: auto;
+  border-top-color: var(--border-color);
 }
 
 .follow-btn {
@@ -419,6 +450,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  background: var(--gradient-primary);
 }
 
 .follow-btn:hover {
@@ -429,6 +461,7 @@
 .follow-btn.following {
   background: linear-gradient(135deg, #10b981 0%, #38ef7d 100%);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: var(--gradient-success);
 }
 
 .follow-btn.following:hover {
@@ -443,6 +476,7 @@
   background: rgba(248, 249, 253, 0.5);
   border-radius: 16px;
   border: 2px dashed rgba(102, 126, 234, 0.2);
+  background: rgba(248, 249, 253, 0.5);
 }
 
 .empty-state h3 {
@@ -450,6 +484,7 @@
   font-weight: 700;
   margin: 0 0 12px 0;
   color: #1e293b;
+  color: var(--text-color);
 }
 
 .empty-state p {
@@ -457,6 +492,7 @@
   color: #64748b;
   margin: 0;
   line-height: 1.6;
+  color: var(--text-secondary);
 }
 
 /* Loading */
@@ -470,6 +506,7 @@
   font-weight: 600;
   grid-column: 1 / -1;
   gap: 12px;
+  color: var(--text-secondary);
 }
 
 .loading-spinner {
@@ -479,6 +516,7 @@
   border-top: 4px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  border-top-color: var(--primary-color);
 }
 
 @keyframes spin {
@@ -488,6 +526,166 @@
 @keyframes gradientMove {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .amis-page {
+  background: var(--dm-background) !important;
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .page-title {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .tabs {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .tab {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .tab:hover {
+  color: var(--dm-primary) !important;
+  background: rgba(167, 139, 250, 0.1) !important;
+}
+
+body.dark-mode .tab.active {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3) !important;
+}
+
+body.dark-mode .tab-content {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .section-header h2 {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .section-header p {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .search-input {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .search-input::placeholder {
+  color: var(--dm-text-light) !important;
+}
+
+body.dark-mode .search-input:focus {
+  border-color: var(--dm-primary) !important;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.1) !important;
+}
+
+body.dark-mode .search-btn {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3) !important;
+}
+
+body.dark-mode .search-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 16px rgba(167, 139, 250, 0.4) !important;
+}
+
+body.dark-mode .reset-btn {
+  background: rgba(167, 139, 250, 0.1) !important;
+  color: var(--dm-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .reset-btn:hover:not(:disabled) {
+  background: rgba(167, 139, 250, 0.15) !important;
+  border-color: var(--dm-primary) !important;
+}
+
+body.dark-mode .retry-btn {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3) !important;
+}
+
+body.dark-mode .retry-btn:hover {
+  box-shadow: 0 6px 16px rgba(167, 139, 250, 0.4) !important;
+}
+
+body.dark-mode .user-card {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .user-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(167, 139, 250, 0.3) !important;
+}
+
+body.dark-mode .user-name {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .user-bio {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .user-no-bio {
+  color: var(--dm-text-light) !important;
+}
+
+body.dark-mode .user-followers-count,
+body.dark-mode .user-posts-count {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .user-card-footer {
+  border-top-color: var(--dm-border) !important;
+}
+
+body.dark-mode .follow-btn {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3) !important;
+}
+
+body.dark-mode .follow-btn:hover {
+  box-shadow: 0 6px 16px rgba(167, 139, 250, 0.4) !important;
+}
+
+body.dark-mode .follow-btn.following {
+  background: var(--gradient-success) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+body.dark-mode .follow-btn.following:hover {
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+body.dark-mode .empty-state {
+  background: rgba(30, 41, 59, 0.5) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .empty-state h3 {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .empty-state p {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .loading-container {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .loading-spinner {
+  border-color: rgba(167, 139, 250, 0.2) !important;
+  border-top-color: var(--dm-primary) !important;
 }
 
 /* Responsive */

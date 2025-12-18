@@ -5,9 +5,11 @@ import { userService } from '../services/userService';
 import { followService } from '../services/followService';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
+import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Amis.css';
 
 const Amis = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('suggestions'); // 'suggestions', 'followers', 'following'
   const [users, setUsers] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -45,7 +47,7 @@ const Amis = () => {
         loadSuggestions()
       ]).catch(error => {
         console.error('Error loading initial data:', error);
-        toast.error('Erreur lors du chargement des données');
+        toast.error(t('errorLoadingData'));
       });
     } else {
       console.log('No current user found');
@@ -76,11 +78,11 @@ const Amis = () => {
         checkFollowStatusForUsers(followerIds);
       } else {
         console.error('Failed to load followers:', response.message);
-        toast.error(response.message || 'Erreur lors du chargement des abonnés');
+        toast.error(response.message || t('errorLoadingFollowers'));
       }
     } catch (error) {
       console.error('Erreur chargement followers:', error);
-      toast.error('Erreur lors du chargement des abonnés: ' + (error.response?.data?.message || error.message));
+      toast.error(t('errorLoadingFollowers') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -101,11 +103,11 @@ const Amis = () => {
         setFollowingIds(ids);
       } else {
         console.error('Failed to load following:', response.message);
-        toast.error(response.message || 'Erreur lors du chargement des abonnements');
+        toast.error(response.message || t('errorLoadingFollowing'));
       }
     } catch (error) {
       console.error('Erreur chargement following:', error);
-      toast.error('Erreur lors du chargement des abonnements: ' + (error.response?.data?.message || error.message));
+      toast.error(t('errorLoadingFollowing') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -123,11 +125,11 @@ const Amis = () => {
         setAllSuggestions(response.data); // Store all suggestions for search reset
       } else {
         console.error('Failed to load suggestions:', response.message);
-        toast.error(response.message || 'Erreur lors du chargement des suggestions');
+        toast.error(response.message || t('errorLoadingSuggestions'));
       }
     } catch (error) {
       console.error('Erreur chargement suggestions:', error);
-      toast.error('Erreur lors du chargement des suggestions: ' + (error.response?.data?.message || error.message));
+      toast.error(t('errorLoadingSuggestions') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -203,7 +205,7 @@ const Amis = () => {
       }
     } catch (error) {
       console.error('Erreur recherche:', error);
-      toast.error('Erreur lors de la recherche');
+      toast.error(t('errorSearching'));
     } finally {
       setLoading(false);
     }
@@ -263,13 +265,13 @@ const Amis = () => {
       const testResponse = await userService.getUserSuggestions(1, 5);
       console.log('API test response:', testResponse);
       if (testResponse.success) {
-        toast.success('API connection successful');
+        toast.success(t('apiConnectionSuccess'));
       } else {
-        toast.error('API connection failed: ' + testResponse.message);
+        toast.error(t('apiConnectionFailed') + ': ' + testResponse.message);
       }
     } catch (error) {
       console.error('API test failed:', error);
-      toast.error('API connection error: ' + (error.response?.data?.message || error.message));
+      toast.error(t('apiConnectionError') + ': ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -279,7 +281,7 @@ const Amis = () => {
       if (response.success) {
         if (response.status === 'following' || response.status === 'accepted') {
           setFollowingIds(prev => new Set([...prev, userId]));
-          toast.success(`Vous suivez maintenant ${userName}`);
+          toast.success(t('nowFollowing').replace('{userName}', userName));
           // Refresh suggestions to remove followed user
           if (activeTab === 'suggestions') {
             loadSuggestions();
@@ -290,7 +292,7 @@ const Amis = () => {
             newSet.delete(userId);
             return newSet;
           });
-          toast.success(`Vous ne suivez plus ${userName}`);
+          toast.success(t('unfollowed').replace('{userName}', userName));
         }
         // Reload lists
         loadFollowers();
@@ -298,7 +300,7 @@ const Amis = () => {
       }
     } catch (error) {
       console.error('Erreur follow:', error);
-      toast.error('Erreur lors de l\'action');
+      toast.error(t('errorFollowingAction'));
     }
   };
 
@@ -353,16 +355,16 @@ const Amis = () => {
             {userData.bio ? (
               <p className="user-bio">{userData.bio}</p>
             ) : (
-              <p className="user-no-bio">Aucune biographie disponible</p>
+              <p className="user-no-bio">{t('noBioAvailable')}</p>
             )}
             <div className="user-meta">
               <span className="user-followers-count">
                 <i className="fas fa-users"></i> 
-                {userData.followerCount || 0} abonnés
+                {userData.followerCount || 0} {t('followers')}
               </span>
               <span className="user-posts-count">
                 <i className="fas fa-file-alt"></i> 
-                {userData.postCount || 0} posts
+                {userData.postCount || 0} {t('posts')}
               </span>
             </div>
           </div>
@@ -376,11 +378,11 @@ const Amis = () => {
             >
               {isFollowing ? (
                 <>
-                  <i className="fas fa-check"></i> Abonné
+                  <i className="fas fa-check"></i> {t('following')}
                 </>
               ) : (
                 <>
-                  <i className="fas fa-plus"></i> Suivre
+                  <i className="fas fa-plus"></i> {t('follow')}
                 </>
               )}
             </button>
@@ -413,7 +415,7 @@ const Amis = () => {
         <Sidebar />
         
         <main className="amis-content">
-          <h1 className="page-title">Amis & Abonnements</h1>
+          <h1 className="page-title">{t('friendsAndSubscriptions')}</h1>
           
           <div className="tabs">
             <button 
@@ -425,7 +427,7 @@ const Amis = () => {
                 loadSuggestions();
               }}
             >
-              💡 Suggestions
+              💡 {t('suggestions')}
             </button>
             <button 
               className={`tab ${activeTab === 'followers' ? 'active' : ''}`}
@@ -436,7 +438,7 @@ const Amis = () => {
                 loadFollowers(); // Reload followers data when switching to this tab
               }}
             >
-              👥 Abonnés ({followers.length})
+              👥 {t('followers')} ({followers.length})
             </button>
             <button 
               className={`tab ${activeTab === 'following' ? 'active' : ''}`}
@@ -447,7 +449,7 @@ const Amis = () => {
                 loadFollowing(); // Reload following data when switching to this tab
               }}
             >
-              ❤️ Abonnements ({following.length})
+              ❤️ {t('subscriptions')} ({following.length})
             </button>
           </div>
 
@@ -455,15 +457,15 @@ const Amis = () => {
             {activeTab === 'suggestions' && (
               <div className="suggestions-section">
                 <div className="section-header">
-                  <h2>Personnes suggérées</h2>
-                  <p>Découvrez de nouvelles personnes à suivre</p>
+                  <h2>{t('suggestedPeople')}</h2>
+                  <p>{t('discoverNewPeople')}</p>
                 </div>
                 
                 <div className="search-bar">
                   <form onSubmit={handleSearch} className="search-form">
                     <input
                       type="text"
-                      placeholder="Rechercher des suggestions..."
+                      placeholder={t('searchSuggestions')}
                       value={suggestionSearchQuery}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -475,10 +477,10 @@ const Amis = () => {
                     <button type="submit" className="search-btn" disabled={loading}>
                       {loading ? (
                         <>
-                          <span className="loading-spinner"></span> Recherche...
+                          <span className="loading-spinner"></span> {t('searching')}
                         </>
                       ) : (
-                        '🔍 Rechercher'
+                        '🔍 {t("search")}'
                       )}
                     </button>
                     <button 
@@ -490,7 +492,7 @@ const Amis = () => {
                       }}
                       disabled={!suggestionSearchQuery}
                     >
-                      🔄 Réinitialiser
+                      🔄 {t('reset')}
                     </button>
                   </form>
                 </div>
@@ -499,15 +501,15 @@ const Amis = () => {
                   {loading ? (
                     <div className="loading-container">
                       <span className="loading-spinner"></span>
-                      <span>Chargement des suggestions...</span>
+                      <span>{t('loadingSuggestions')}</span>
                     </div>
                   ) : users.length === 0 ? (
                     <div className="empty-state">
-                      <h3>Aucune suggestion disponible</h3>
-                      <p>Nous n'avons pas trouvé de nouvelles personnes à suggérer pour le moment.</p>
+                      <h3>{t('noSuggestionsAvailable')}</h3>
+                      <p>{t('noSuggestionsMessage')}</p>
                       {!isLoadingComplete && (
                         <button onClick={loadSuggestions} className="retry-btn">
-                          Réessayer
+                          {t('retry')}
                         </button>
                       )}
                     </div>
@@ -521,15 +523,15 @@ const Amis = () => {
             {activeTab === 'followers' && (
               <div className="followers-section">
                 <div className="section-header">
-                  <h2>Vos abonnés</h2>
-                  <p>Les personnes qui vous suivent</p>
+                  <h2>{t('yourFollowers')}</h2>
+                  <p>{t('peopleFollowingYou')}</p>
                 </div>
                 
                 <div className="search-bar">
                   <form onSubmit={handleSearch} className="search-form">
                     <input
                       type="text"
-                      placeholder="Rechercher dans vos abonnés..."
+                      placeholder={t('searchFollowers')}
                       value={followerSearchQuery}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -541,10 +543,10 @@ const Amis = () => {
                     <button type="submit" className="search-btn" disabled={loading}>
                       {loading ? (
                         <>
-                          <span className="loading-spinner"></span> Recherche...
+                          <span className="loading-spinner"></span> {t('searching')}
                         </>
                       ) : (
-                        '🔍 Rechercher'
+                        '🔍 {t("search")}'
                       )}
                     </button>
                     <button 
@@ -556,7 +558,7 @@ const Amis = () => {
                       }}
                       disabled={!followerSearchQuery}
                     >
-                      🔄 Réinitialiser
+                      🔄 {t('reset')}
                     </button>
                   </form>
                 </div>
@@ -565,15 +567,15 @@ const Amis = () => {
                   {loading ? (
                     <div className="loading-container">
                       <span className="loading-spinner"></span>
-                      <span>Chargement des abonnés...</span>
+                      <span>{t('loadingFollowers')}</span>
                     </div>
                   ) : followers.length === 0 ? (
                     <div className="empty-state">
-                      <h3>Aucun abonné</h3>
-                      <p>Vous n'avez pas encore d'abonnés. Partagez votre profil pour en avoir !</p>
+                      <h3>{t('noFollowers')}</h3>
+                      <p>{t('noFollowersMessage')}</p>
                       {!isLoadingComplete && (
                         <button onClick={loadFollowers} className="retry-btn">
-                          Réessayer
+                          {t('retry')}
                         </button>
                       )}
                     </div>
@@ -589,15 +591,15 @@ const Amis = () => {
             {activeTab === 'following' && (
               <div className="following-section">
                 <div className="section-header">
-                  <h2>Abonnements</h2>
-                  <p>Les personnes que vous suivez</p>
+                  <h2>{t('subscriptions')}</h2>
+                  <p>{t('peopleYouFollow')}</p>
                 </div>
                 
                 <div className="search-bar">
                   <form onSubmit={handleSearch} className="search-form">
                     <input
                       type="text"
-                      placeholder="Rechercher dans vos abonnements..."
+                      placeholder={t('searchSubscriptions')}
                       value={followingSearchQuery}
                       onChange={(e) => {
                         const value = e.target.value;
@@ -609,10 +611,10 @@ const Amis = () => {
                     <button type="submit" className="search-btn" disabled={loading}>
                       {loading ? (
                         <>
-                          <span className="loading-spinner"></span> Recherche...
+                          <span className="loading-spinner"></span> {t('searching')}
                         </>
                       ) : (
-                        '🔍 Rechercher'
+                        '🔍 {t("search")}'
                       )}
                     </button>
                     <button 
@@ -624,7 +626,7 @@ const Amis = () => {
                       }}
                       disabled={!followingSearchQuery}
                     >
-                      🔄 Réinitialiser
+                      🔄 {t('reset')}
                     </button>
                   </form>
                 </div>
@@ -633,15 +635,15 @@ const Amis = () => {
                   {loading ? (
                     <div className="loading-container">
                       <span className="loading-spinner"></span>
-                      <span>Chargement des abonnements...</span>
+                      <span>{t('loadingSubscriptions')}</span>
                     </div>
                   ) : following.length === 0 ? (
                     <div className="empty-state">
-                      <h3>Aucun abonnement</h3>
-                      <p>Vous ne suivez personne pour le moment. Consultez les suggestions pour découvrir de nouvelles personnes !</p>
+                      <h3>{t('noSubscriptions')}</h3>
+                      <p>{t('noSubscriptionsMessage')}</p>
                       {!isLoadingComplete && (
                         <button onClick={loadFollowing} className="retry-btn">
-                          Réessayer
+                          {t('retry')}
                         </button>
                       )}
                     </div>
