@@ -17,7 +17,7 @@ const schema = yup.object({
 const ReinitialiserMotDePasse = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { resetToken } = useParams();
+  const { resetToken } = useParams(); // This should correctly get the token from the URL
   const navigate = useNavigate();
 
   const {
@@ -30,6 +30,9 @@ const ReinitialiserMotDePasse = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    
+    // Debugging: log the token to see if it's correctly extracted
+    console.log('Reset token:', resetToken);
     
     try {
       const result = await authService.resetPassword(resetToken, data.password);
@@ -44,6 +47,8 @@ const ReinitialiserMotDePasse = () => {
         toast.error(result.message || 'Erreur lors de la réinitialisation');
       }
     } catch (err) {
+      // More detailed error logging
+      console.error('Reset password error:', err);
       const errorMsg = err.response?.data?.message || 'Erreur de connexion au serveur';
       toast.error(errorMsg);
     } finally {
@@ -69,6 +74,35 @@ const ReinitialiserMotDePasse = () => {
           <div className="reset-password-links">
             <Link to="/connexion" className="link">
               Aller à la connexion maintenant
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show an error if no token is present
+  if (!resetToken) {
+    return (
+      <div className="reset-password-page">
+        <div className="reset-password-container">
+          <div className="reset-password-header">
+            <h1 className="reset-password-title">Mini-Facebook</h1>
+            <p className="reset-password-subtitle">Erreur</p>
+          </div>
+          
+          <div className="error-message">
+            <div className="error-icon">⚠️</div>
+            <p>Lien de réinitialisation invalide ou manquant.</p>
+            <p>Veuillez vérifier l'URL ou demander un nouveau lien.</p>
+          </div>
+          
+          <div className="reset-password-links">
+            <Link to="/mot-de-passe-oublie" className="link">
+              Demander un nouveau lien
+            </Link>
+            <Link to="/connexion" className="link">
+              ← Retour à la connexion
             </Link>
           </div>
         </div>

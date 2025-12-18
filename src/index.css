@@ -62,6 +62,28 @@
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 300ms ease-in-out;
   --transition-slow: 500ms ease-in-out;
+  
+  /* Dark Mode Variables - Professional Purple Theme */
+  --dm-primary: #a78bfa;
+  --dm-primary-dark: #8b5cf6;
+  --dm-primary-light: #c4b5fd;
+  --dm-secondary: #d8b4fe;
+  --dm-accent: #a5b4fc;
+  
+  /* Background Colors */
+  --dm-background: #0f172a;
+  --dm-card-bg: #1e293b;
+  --dm-card-hover: #334155;
+  
+  /* Text Colors - All Purple/Violet in Dark Mode */
+  --dm-text: #e2e8f0;
+  --dm-text-secondary: #c7d2fe;
+  --dm-text-light: #a5b4fc;
+  --dm-text-white: #ffffff;
+  
+  /* Border & Shadows */
+  --dm-border: #334155;
+  --dm-shadow: 0 8px 32px 0 rgba(139, 92, 246, 0.2);
 }
 
 /* Reset & Base Styles */
@@ -90,6 +112,7 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Scrollbar Styling */
@@ -174,6 +197,9 @@ select {
   font-family: inherit;
   font-size: inherit;
   transition: var(--transition-fast);
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
 input:focus,
@@ -272,6 +298,7 @@ select:focus {
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
   transition: var(--transition-normal);
+  border: 1px solid var(--border-color);
 }
 
 .card:hover {
@@ -301,6 +328,9 @@ select:focus {
   gap: 8px;
   position: relative;
   overflow: hidden;
+  border: none;
+  color: var(--text-white);
+  background: var(--gradient-primary);
 }
 
 .btn::before {
@@ -323,7 +353,6 @@ select:focus {
 
 .btn-primary {
   background: var(--gradient-primary);
-  color: var(--text-white);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
@@ -333,13 +362,11 @@ select:focus {
 
 .btn-secondary {
   background: var(--gradient-secondary);
-  color: var(--text-white);
   box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
 }
 
 .btn-accent {
   background: var(--gradient-accent);
-  color: var(--text-white);
   box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
 }
 
@@ -359,20 +386,110 @@ select:focus {
   border-radius: var(--border-radius-sm) !important;
   box-shadow: var(--shadow-xl) !important;
   font-family: inherit !important;
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
 }
 
 .Toastify__toast--success {
   background: var(--gradient-success) !important;
+  color: var(--text-white) !important;
 }
 
 .Toastify__toast--error {
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+  color: var(--text-white) !important;
 }
 
 .Toastify__toast--info {
   background: var(--gradient-accent) !important;
+  color: var(--text-white) !important;
 }
 
 .Toastify__progress-bar {
   background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode {
+  background: var(--dm-background) !important;
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode p {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode a {
+  color: var(--dm-primary) !important;
+}
+
+body.dark-mode a:hover {
+  color: var(--dm-primary-dark) !important;
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+  background: var(--dm-card-bg) !important;
+  color: var(--dm-text) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus {
+  border-color: var(--dm-primary) !important;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1) !important;
+}
+
+body.dark-mode .card {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .btn {
+  color: var(--dm-text-white) !important;
+}
+
+body.dark-mode .btn-primary {
+  background: var(--gradient-primary) !important;
+  box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4) !important;
+}
+
+body.dark-mode .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.6) !important;
+}
+
+body.dark-mode .btn-secondary {
+  background: var(--gradient-secondary) !important;
+  box-shadow: 0 4px 15px rgba(216, 180, 254, 0.4) !important;
+}
+
+body.dark-mode .btn-accent {
+  background: var(--gradient-accent) !important;
+  box-shadow: 0 4px 15px rgba(165, 180, 252, 0.4) !important;
+}
+
+body.dark-mode .btn-outline {
+  border-color: var(--dm-primary) !important;
+  color: var(--dm-primary) !important;
+}
+
+body.dark-mode .btn-outline:hover {
+  background: var(--dm-primary) !important;
+  color: var(--dm-text-white) !important;
+}
+
+body.dark-mode .Toastify__toast {
+  background: var(--dm-card-bg) !important;
+  color: var(--dm-text) !important;
 }

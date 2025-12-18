@@ -22,7 +22,7 @@
 }
 
 .comment-widget {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   width: 90%;
   max-width: 600px;
@@ -40,6 +40,7 @@
   transform: none !important;
   will-change: auto !important;
   cursor: auto !important;
+  color: var(--text-color);
 }
 
 .comment-widget-header {
@@ -47,8 +48,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #eee;
-  background: #fafafa;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
   margin: 0;
   animation: none !important;
   transition: none !important;
@@ -59,7 +60,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   animation: none !important;
   transition: none !important;
   transform: none !important;
@@ -95,8 +96,8 @@
   display: flex;
   gap: 12px;
   padding: 20px 24px;
-  border-bottom: 1px solid #eee;
-  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
   margin: 0;
   animation: none !important;
   transition: none !important;
@@ -108,7 +109,7 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   flex-shrink: 0;
   margin: 0;
   animation: none !important;
@@ -120,9 +121,10 @@
   flex: 1;
   padding: 12px 16px;
   border-radius: 24px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   font-size: 14px;
-  background: #f8f9fa;
+  background: var(--card-bg);
+  color: var(--text-color);
   margin: 0;
   animation: none !important;
   transition: none !important;
@@ -131,8 +133,8 @@
 
 .comment-input:focus {
   outline: none;
-  border-color: #667eea;
-  background: white;
+  border-color: var(--primary-color);
+  background: var(--card-bg);
   animation: none !important;
   transition: none !important;
   transform: none !important;
@@ -141,7 +143,7 @@
 .comment-submit-btn {
   padding: 10px 20px;
   border-radius: 20px;
-  background: #667eea;
+  background: var(--gradient-primary);
   color: white;
   border: none;
   font-weight: 600;
@@ -153,7 +155,7 @@
 }
 
 .comment-submit-btn:hover {
-  background: #5a6fd8;
+  background: var(--primary-dark);
   animation: none !important;
   transition: none !important;
   transform: none !important;
@@ -174,7 +176,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background: #f8f9fa;
+  background: var(--card-bg);
   margin: 0;
   animation: none !important;
   transition: none !important;
@@ -192,7 +194,7 @@
 
 .comment-content {
   flex: 1;
-  background: white;
+  background: var(--card-bg);
   padding: 12px 16px;
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -200,22 +202,23 @@
   animation: none !important;
   transition: none !important;
   transform: none !important;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+.comment-author {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
   animation: none !important;
   transition: none !important;
   transform: none !important;
 }
 
-.comment-author {
-  font-weight: 600;
-  font-size: 14px;
-  color: #333;
+.comment-text {
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
   animation: none !important;
   transition: none !important;
   transform: none !important;
@@ -223,48 +226,83 @@
 
 .comment-time {
   font-size: 12px;
-  color: #666;
+  color: var(--text-light);
+  margin-top: 6px;
   animation: none !important;
   transition: none !important;
   transform: none !important;
 }
 
-.comment-text {
-  margin: 0;
-  font-size: 14px;
-  color: #444;
-  line-height: 1.5;
-  animation: none !important;
-  transition: none !important;
-  transform: none !important;
+/* Dark Mode Adjustments */
+body.dark-mode .comment-widget {
+  background: var(--dm-card-bg) !important;
+  color: var(--dm-text) !important;
+  border: 1px solid var(--dm-border) !important;
 }
 
-.loading-text,
-.no-comments {
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  padding: 40px 20px;
-  margin: 0;
-  animation: none !important;
-  transition: none !important;
-  transform: none !important;
+body.dark-mode .comment-widget-header {
+  background: var(--dm-card-bg) !important;
+  border-bottom-color: var(--dm-border) !important;
 }
 
-.comments-list::-webkit-scrollbar {
-  width: 6px;
+body.dark-mode .comment-widget-header h3 {
+  color: var(--dm-text) !important;
 }
 
-.comments-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+body.dark-mode .comment-form {
+  background: var(--dm-card-bg) !important;
+  border-bottom-color: var(--dm-border) !important;
 }
 
-.comments-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 10px;
+body.dark-mode .comment-input {
+  background: var(--dm-card-bg) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text) !important;
 }
 
-.comments-list::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+body.dark-mode .comment-input:focus {
+  border-color: var(--dm-primary) !important;
+  background: var(--dm-card-bg) !important;
+}
+
+body.dark-mode .comment-submit-btn {
+  background: var(--gradient-primary) !important;
+}
+
+body.dark-mode .comment-submit-btn:hover {
+  background: var(--dm-primary-dark) !important;
+}
+
+body.dark-mode .comments-list {
+  background: var(--dm-card-bg) !important;
+}
+
+body.dark-mode .comment-content {
+  background: var(--dm-card-bg) !important;
+  color: var(--dm-text) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .comment-author {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .comment-text {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .comment-time {
+  color: var(--dm-text-light) !important;
+}
+
+body.dark-mode .comment-avatar {
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .close-widget-btn {
+  background: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .close-widget-btn:hover {
+  background: var(--dm-text) !important;
 }

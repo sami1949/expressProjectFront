@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import { notificationService } from '../services/notificationService';
+import { useLanguage } from '../contexts/LanguageContext';
 import './Notifications.css';
 
 const Notifications = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,7 @@ const Notifications = () => {
         setHasMore(response.pagination.page < response.pagination.pages);
       }
     } catch (error) {
-      console.error('Erreur lors du chargement des notifications:', error);
+      console.error(t('errorLoadingNotifications'), error);
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ const Notifications = () => {
         )
       );
     } catch (error) {
-      console.error('Erreur lors du marquage comme lu:', error);
+      console.error(t('errorMarkingAsRead'), error);
     }
   };
 
@@ -58,7 +60,7 @@ const Notifications = () => {
         prev.map(notif => ({ ...notif, lue: true }))
       );
     } catch (error) {
-      console.error('Erreur lors du marquage de toutes les notifications:', error);
+      console.error(t('errorMarkingAllAsRead'), error);
     }
   };
 
@@ -67,12 +69,12 @@ const Notifications = () => {
       await notificationService.deleteNotification(notificationId);
       setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      console.error(t('errorDeletingNotification'), error);
     }
   };
 
   const handleDeleteAllRead = async () => {
-    if (!window.confirm('Voulez-vous vraiment supprimer toutes les notifications lues ?')) {
+    if (!window.confirm(t('confirmDeleteReadNotifications'))) {
       return;
     }
     
@@ -80,7 +82,7 @@ const Notifications = () => {
       await notificationService.deleteAllRead();
       setNotifications(prev => prev.filter(notif => !notif.lue));
     } catch (error) {
-      console.error('Erreur lors de la suppression des notifications lues:', error);
+      console.error(t('errorDeletingReadNotifications'), error);
     }
   };
 
@@ -164,10 +166,10 @@ const Notifications = () => {
     const notifDate = new Date(date);
     const diffInSeconds = Math.floor((now - notifDate) / 1000);
 
-    if (diffInSeconds < 60) return 'À l\'instant';
-    if (diffInSeconds < 3600) return `Il y a ${Math.floor(diffInSeconds / 60)} min`;
-    if (diffInSeconds < 86400) return `Il y a ${Math.floor(diffInSeconds / 3600)} h`;
-    if (diffInSeconds < 604800) return `Il y a ${Math.floor(diffInSeconds / 86400)} j`;
+    if (diffInSeconds < 60) return t('justNow');
+    if (diffInSeconds < 3600) return t('minutesAgoShort').replace('{minutes}', Math.floor(diffInSeconds / 60));
+    if (diffInSeconds < 86400) return t('hoursAgoShort').replace('{hours}', Math.floor(diffInSeconds / 3600));
+    if (diffInSeconds < 604800) return t('daysAgoShort').replace('{days}', Math.floor(diffInSeconds / 86400));
     
     return notifDate.toLocaleDateString('fr-FR', {
       day: 'numeric',
@@ -187,20 +189,20 @@ const Notifications = () => {
         <main className="main-content">
           <div className="notifications-container">
             <div className="notifications-header">
-              <h1>Notifications</h1>
+              <h1>{t('notifications')}</h1>
               <div className="notifications-actions">
                 <button 
                   onClick={handleMarkAllAsRead}
                   className="btn-secondary"
                   disabled={unreadCount === 0}
                 >
-                  Tout marquer comme lu
+                  {t('markAllAsRead')}
                 </button>
                 <button 
                   onClick={handleDeleteAllRead}
                   className="btn-danger"
                 >
-                  Supprimer les lues
+                  {t('deleteRead')}
                 </button>
               </div>
             </div>
@@ -213,7 +215,7 @@ const Notifications = () => {
                   setPage(1);
                 }}
               >
-                Toutes
+                {t('all')}
               </button>
               <button 
                 className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
@@ -222,17 +224,17 @@ const Notifications = () => {
                   setPage(1);
                 }}
               >
-                Non lues ({unreadCount})
+                {t('unread')} ({unreadCount})
               </button>
             </div>
 
             <div className="notifications-list">
               {loading && page === 1 ? (
-                <div className="loading">Chargement...</div>
+                <div className="loading">{t('loading')}</div>
               ) : notifications.length === 0 ? (
                 <div className="no-notifications">
                   <span className="no-notif-icon">🔔</span>
-                  <p>Aucune notification</p>
+                  <p>{t('noNotifications')}</p>
                 </div>
               ) : (
                 <>
@@ -281,7 +283,7 @@ const Notifications = () => {
                       onClick={() => setPage(prev => prev + 1)}
                       disabled={loading}
                     >
-                      {loading ? 'Chargement...' : 'Charger plus'}
+                      {loading ? t('loading') : t('loadMore')}
                     </button>
                   )}
                 </>

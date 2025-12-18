@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fd 0%, #e9ecf5 100%);
   position: relative;
+  background: var(--background-color);
 }
 
 /* Decorative Background Elements */
@@ -47,6 +48,7 @@
   box-shadow: var(--shadow-xl);
   backdrop-filter: blur(10px);
   animation: scaleIn 0.5s ease-out;
+  background: var(--card-bg);
 }
 
 .loading-posts p {
@@ -56,6 +58,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: var(--text-color);
 }
 
 .loading-posts p::before {
@@ -82,6 +85,7 @@
   box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
   position: relative;
   overflow: hidden;
+  background: var(--gradient-accent);
 }
 
 .load-more-btn::before {
@@ -112,6 +116,33 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .accueil-page {
+  background: var(--dm-background) !important;
+}
+
+body.dark-mode .accueil-page::before {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%) !important;
+}
+
+body.dark-mode .loading-posts {
+  background: var(--dm-card-bg) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .loading-posts p {
+  color: var(--dm-text) !important;
+}
+
+body.dark-mode .load-more-btn {
+  background: var(--gradient-accent) !important;
+  box-shadow: 0 8px 25px rgba(165, 180, 252, 0.4) !important;
+}
+
+body.dark-mode .load-more-btn:hover {
+  box-shadow: 0 12px 35px rgba(165, 180, 252, 0.5) !important;
 }
 
 /* Responsive Design */

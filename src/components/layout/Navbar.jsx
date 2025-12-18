@@ -2,10 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { notificationService } from '../../services/notificationService';
+import DarkModeToggle from '../common/DarkModeToggle';
+import { useLanguage } from '../../contexts/LanguageContext.jsx';
 import './Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -87,11 +90,12 @@ const Navbar = () => {
           <span className="search-icon">🔍</span>
           <input 
             type="text" 
-            placeholder="Rechercher sur Mini-Facebook..."
+            placeholder={t('searchPlaceholder')}
           />
         </div>
 
         <div className="navbar-user">
+          <DarkModeToggle />
           <div className="user-profile-wrapper" ref={dropdownRef}>
             <button 
               className="user-avatar-btn"
@@ -122,17 +126,17 @@ const Navbar = () => {
               <div className="dropdown-menu">
                 <Link to="/profil" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">👤</span>
-                  <span>Mon Profil</span>
+                  <span>{t('myProfile')}</span>
                 </Link>
 
                 <Link to="/parametres" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">⚙️</span>
-                  <span>Paramètres</span>
+                  <span>{t('settings')}</span>
                 </Link>
 
                 <Link to="/amis" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">👥</span>
-                  <span>Mes Amis</span>
+                  <span>{t('friends')}</span>
                 </Link>
 
                 <div className="dropdown-divider"></div>
@@ -148,7 +152,7 @@ const Navbar = () => {
                   }}
                 >
                   <span className="dropdown-item-icon">🔔</span>
-                  <span>Notifications</span>
+                  <span>{t('notifications')}</span>
                   {notificationCount > 0 && (
                     <span className="notification-badge">{notificationCount}</span>
                   )}
@@ -156,14 +160,14 @@ const Navbar = () => {
 
                 <Link to="/messages" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">💬</span>
-                  <span>Messages</span>
+                  <span>{t('messages')}</span>
                 </Link>
 
                 <div className="dropdown-divider"></div>
 
                 <Link to="/aide" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                   <span className="dropdown-item-icon">❓</span>
-                  <span>Aide & Support</span>
+                  <span>{t('helpSupport')}</span>
                 </Link>
 
                 <div className="dropdown-divider"></div>
@@ -176,7 +180,7 @@ const Navbar = () => {
                   }}
                 >
                   <span className="dropdown-item-icon">🚪</span>
-                  <span>Déconnexion</span>
+                  <span>{t('logout')}</span>
                 </button>
               </div>
             </div>
