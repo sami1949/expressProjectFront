@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { authService } from '../services/authService';
+import { GoogleLogin } from '@react-oauth/google';
 import './Connexion.css';
 
 const schema = yup.object({
@@ -60,6 +61,30 @@ const Connexion = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Google Login Handler
+  const handleGoogleLoginSuccess = async (response) => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await authService.googleAuth(response.credential);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.message || 'Google authentication failed');
+      }
+    } catch (err) {
+      setError('Google authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error('Google Login Failed:', error);
+    setError('Google authentication failed. Please try again.');
   };
 
   return (
@@ -344,10 +369,12 @@ const Connexion = () => {
               
               {/* Social Login */}
               <div className="social-login-fixed">
-                <button type="button" className="social-btn-fixed google-btn">
-                  <span className="social-icon">G</span>
-                  <span className="social-text">Continuer avec Google</span>
-                </button>
+                <GoogleLogin
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={handleGoogleLoginFailure}
+                  useOneTap
+                  className="social-btn-fixed google-btn"
+                />
                 <button type="button" className="social-btn-fixed facebook-btn">
                   <span className="social-icon">f</span>
                   <span className="social-text">Continuer avec Facebook</span>

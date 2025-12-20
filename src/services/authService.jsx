@@ -196,5 +196,22 @@ export const authService = {
     } catch (error) {
       return true;
     }
+  },
+  
+  // Google Authentication
+  async googleAuth(credential) {
+    try {
+      const response = await api.post('/auth/google-auth', { credential });
+      if (response.data.success) {
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data));
+      }
+      return response.data;
+    } catch (error) {
+      // If there's an error, ensure we clean up any partial auth data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw error;
+    }
   }
 };
