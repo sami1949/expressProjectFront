@@ -380,6 +380,11 @@
   color: var(--text-color);
 }
 
+.header-name:hover {
+  text-decoration: underline;
+  color: #8a2be2;
+}
+
 .header-bio {
   font-size: 14px;
   color: rgba(26, 26, 46, 0.6);
