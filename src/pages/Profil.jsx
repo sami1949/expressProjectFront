@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import PublicationList from '../components/posts/PublicationList';
@@ -31,8 +31,7 @@ const Profil = () => {
   const fileInputRef = useRef(null);
   const coverFileInputRef = useRef(null); // Added cover file input ref
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get('id');
+  const { userId } = useParams();
   const currentUser = authService.getCurrentUser();
 
   useEffect(() => {

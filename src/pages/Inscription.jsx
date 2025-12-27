@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
 import './Inscription.css';
 
 const schema = yup.object({
@@ -76,6 +77,30 @@ const Inscription = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Google Login Handler
+  const handleGoogleLoginSuccess = async (response) => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await authService.googleAuth(response.credential);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.message || 'Google authentication failed');
+      }
+    } catch (err) {
+      setError('Google authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLoginFailure = (error) => {
+    console.error('Google Login Failed:', error);
+    setError('Google authentication failed. Please try again.');
   };
 
   return (
@@ -455,10 +480,12 @@ const Inscription = () => {
               <div className="social-signup-fixed">
                 <p className="social-text">Ou inscrivez-vous avec</p>
                 <div className="social-buttons">
-                  <button type="button" className="social-btn-fixed google-btn">
-                    <span className="social-icon">G</span>
-                    <span className="social-text-btn">Google</span>
-                  </button>
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginFailure}
+                    useOneTap
+                    className="social-btn-fixed google-btn"
+                  />
                   <button type="button" className="social-btn-fixed facebook-btn">
                     <span className="social-icon">f</span>
                     <span className="social-text-btn">Facebook</span>

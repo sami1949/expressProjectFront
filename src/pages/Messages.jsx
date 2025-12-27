@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import { messageService } from '../services/messageService';
@@ -35,6 +35,7 @@ const Messages = () => {
   const audioInputRef = useRef(null);
   const recordingIntervalRef = useRef(null);
   const mediaStreamRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadConversations();
@@ -602,9 +603,31 @@ const Messages = () => {
                       onError={(e) => {
                         e.target.src = 'https://via.placeholder.com/48?text=User';
                       }}
+                      onClick={() => {
+                        // Navigate to user's profile when clicking on avatar
+                        const userId = selectedConversation._id;
+                        if (userId && userId !== currentUser?.id) {
+                          navigate(`/profil/${userId}`);
+                        } else if (userId === currentUser?.id) {
+                          navigate('/profil');
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
                     />
                     <div className="header-info">
-                      <h3 className="header-name">
+                      <h3 
+                        className="header-name"
+                        onClick={() => {
+                          // Navigate to user's profile when clicking on name
+                          const userId = selectedConversation._id;
+                          if (userId && userId !== currentUser?.id) {
+                            navigate(`/profil/${userId}`);
+                          } else if (userId === currentUser?.id) {
+                            navigate('/profil');
+                          }
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
                         {selectedConversation.prenom} {selectedConversation.nom}
                       </h3>
                       {selectedConversation.bio && (

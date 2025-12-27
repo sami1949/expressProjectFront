@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { authService } from './services/authService';
@@ -27,7 +28,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Routes>
         {/* Routes publiques */}
         <Route path="/connexion" element={<Connexion />} />
@@ -110,7 +111,7 @@ function App() {
         draggable
         pauseOnHover
       />
-    </>
+    </GoogleOAuthProvider>
   );
 }
 
