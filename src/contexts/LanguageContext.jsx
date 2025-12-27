@@ -162,6 +162,15 @@ const translations = {
     'changeCoverPhoto': 'Changer la photo de couverture',
     'saveChanges': 'Enregistrer les modifications',
     'message': 'Message',
+    'block': 'Bloquer',
+    'unblock': 'Débloquer',
+    'userBlockedSuccessfully': 'Utilisateur bloqué avec succès',
+    'userUnblockedSuccessfully': 'Utilisateur débloqué avec succès',
+    'errorBlockingUser': 'Erreur lors du blocage de l\'utilisateur',
+    'blockedByUser': 'Bloqué par l\'utilisateur',
+    'profileBlockedMessage': 'Profil bloqué',
+    'youAreBlockedMessage': 'Vous ne pouvez pas accéder à ce profil car vous avez été bloqué par cet utilisateur.',
+    'blockedUserPostsMessage': 'Vous ne pouvez pas voir les publications de cet utilisateur car vous l\'avez bloqué.',
     
     // Other common terms
     'save': 'Enregistrer',
@@ -328,6 +337,15 @@ const translations = {
     'changeCoverPhoto': 'Change cover photo',
     'saveChanges': 'Save changes',
     'message': 'Message',
+    'block': 'Block',
+    'unblock': 'Unblock',
+    'userBlockedSuccessfully': 'User blocked successfully',
+    'userUnblockedSuccessfully': 'User unblocked successfully',
+    'errorBlockingUser': 'Error blocking user',
+    'blockedByUser': 'Blocked by user',
+    'profileBlockedMessage': 'Profile Blocked',
+    'youAreBlockedMessage': 'You cannot access this profile because you have been blocked by this user.',
+    'blockedUserPostsMessage': 'You cannot see this user\'s posts because you have blocked them.',
     
     // Other common terms
     'save': 'Save',

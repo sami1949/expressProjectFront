@@ -5,6 +5,7 @@ import Sidebar from '../components/layout/Sidebar';
 import PublicationForm from '../components/posts/PublicationForm';
 import PublicationList from '../components/posts/PublicationList';
 import { postService } from '../services/postService';
+import { blockService } from '../services/blockService';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Acceuil.css';
@@ -17,6 +18,7 @@ const Accueil = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [singlePost, setSinglePost] = useState(null); // For displaying a single post
+  const [blockedUsers, setBlockedUsers] = useState([]); // List of users the current user has blocked
 
   // Fetch posts from backend
   const fetchPosts = async (pageNum = 1) => {
@@ -62,19 +64,56 @@ const Accueil = () => {
     }
   };
 
+  // Fetch blocked users list
+  const fetchBlockedUsers = async () => {
+    try {
+      const response = await blockService.getBlockedUsers();
+      if (response.success) {
+        const blockedUserIds = response.data.map(block => block.id_bloque._id || block.id_bloque);
+        setBlockedUsers(blockedUserIds);
+      }
+    } catch (error) {
+      console.error('Error fetching blocked users:', error);
+    }
+  };
+
+  // Filter posts to remove those from blocked users
+  const filterBlockedPosts = (postsList) => {
+    return postsList.filter(post => !blockedUsers.includes(post.auteur?._id || post.id_user));
+  };
+
   useEffect(() => {
     if (postId) {
       // If postId is present in URL, fetch only that post
       fetchSinglePost(postId);
     } else {
-      // Otherwise, fetch all posts
+      // Otherwise, fetch all posts and blocked users
       fetchPosts();
+      fetchBlockedUsers();
     }
+
+    // Listen for block/unblock events to refresh data
+    const handleBlockChange = () => {
+      if (!postId) {
+        fetchPosts();
+        fetchBlockedUsers();
+      }
+    };
+
+    // Add event listener for custom block change events
+    window.addEventListener('blockChange', handleBlockChange);
+
+    return () => {
+      window.removeEventListener('blockChange', handleBlockChange);
+    };
   }, [postId]);
 
   const handleNewPost = (newPost) => {
-    setPosts([newPost, ...posts]);
-    toast.success('Publication créée avec succès !');
+    // Only add the new post if the author is not blocked
+    if (!blockedUsers.includes(newPost.auteur?._id || newPost.id_user)) {
+      setPosts([newPost, ...posts]);
+      toast.success('Publication créée avec succès !');
+    }
   };
 
   const handleLoadMore = () => {
@@ -100,6 +139,9 @@ const Accueil = () => {
     toast.success('Publication supprimée');
   };
 
+  // Filter posts to exclude those from blocked users
+  const filteredPosts = filterBlockedPosts(posts);
+
   return (
     <div className="accueil-page">
       <Navbar />
@@ -118,7 +160,7 @@ const Accueil = () => {
           ) : (
             <>
               <PublicationList 
-                posts={posts}
+                posts={filteredPosts}
                 onPostUpdate={handlePostUpdate}
                 onPostDelete={handlePostDelete}
                 singlePostMode={!!postId} // Pass flag for single post mode

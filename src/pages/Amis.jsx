@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import { userService } from '../services/userService';
@@ -10,6 +11,7 @@ import './Amis.css';
 
 const Amis = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('suggestions'); // 'suggestions', 'followers', 'following'
   const [users, setUsers] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -342,6 +344,8 @@ const Amis = () => {
               src={userData.photo || 'https://via.placeholder.com/80?text=User'} 
               alt={`${userData.prenom || ''} ${userData.nom || ''}`}
               className="user-avatar"
+              onClick={() => navigate(`/profil/${userData._id}`)}
+              style={{ cursor: 'pointer' }}
               onError={(e) => {
                 e.target.src = 'https://via.placeholder.com/80?text=User';
               }}
@@ -349,7 +353,7 @@ const Amis = () => {
             <div className="user-status-indicator"></div>
           </div>
           <div className="user-info">
-            <h3 className="user-name">
+            <h3 className="user-name" onClick={() => navigate(`/profil/${userData._id}`)} style={{ cursor: 'pointer' }}>
               {userData.prenom || ''} {userData.nom || ''}
             </h3>
             {userData.bio ? (

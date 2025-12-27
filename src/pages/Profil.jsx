@@ -7,6 +7,7 @@ import { authService } from '../services/authService';
 import { postService } from '../services/postService';
 import { userService } from '../services/userService';
 import { followService } from '../services/followService';
+import { blockService } from '../services/blockService';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext.jsx';
 import './Profil.css';
@@ -19,6 +20,11 @@ const Profil = () => {
   const [editing, setEditing] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [blockStatus, setBlockStatus] = useState({
+    blocked: false,
+    youBlockedThem: false,
+    theyBlockedYou: false
+  });
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -64,6 +70,19 @@ const Profil = () => {
             setIsFollowing(followStatus.data?.following || followStatus.following || false);
           } catch (err) {
             console.error('Error checking follow status:', err);
+          }
+          
+          // Check if this user is blocked
+          try {
+            const blockStatusResponse = await blockService.checkBlockStatus(userId);
+            console.log('Block status:', blockStatusResponse);
+            setBlockStatus({
+              blocked: blockStatusResponse.blocked || false,
+              youBlockedThem: blockStatusResponse.youBlockedThem || false,
+              theyBlockedYou: blockStatusResponse.theyBlockedYou || false
+            });
+          } catch (err) {
+            console.error('Error checking block status:', err);
           }
           
           // Fetch user's posts
@@ -250,12 +269,111 @@ const Profil = () => {
     navigate(`/messages?userId=${userId}`);
   };
 
+  const handleBlock = async () => {
+    try {
+      const response = await blockService.toggleBlock(userId);
+      if (response.success) {
+        setBlockStatus(prev => ({
+          ...prev,
+          blocked: response.blocked,
+          youBlockedThem: response.blocked, // Current user is blocking/unblocking
+          theyBlockedYou: prev.theyBlockedYou // Keep the original value
+        }));
+        const message = response.blocked ? t('userBlockedSuccessfully') : t('userUnblockedSuccessfully');
+        toast.success(message);
+      }
+    } catch (error) {
+      console.error(t('errorBlockingUser'), error);
+      toast.error(t('errorBlockingUser'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="profil-page">
         <Navbar />
         <div className="loading-container">
           <p>{t('loadingProfile')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If the current user is blocked by the profile owner, show a blocked message
+  // This means the profile owner blocked the current user (not the other way around)
+  if (!isOwnProfile && blockStatus.theyBlockedYou) {
+    return (
+      <div className="profil-page">
+        <Navbar />
+        
+        <div className="profil-container">
+          <Sidebar />
+          
+          <main className="profil-content">
+            <div className="blocked-profile-message">
+              <h2>{t('profileBlockedMessage')}</h2>
+              <p>{t('youAreBlockedMessage')}</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  // If the current user has blocked the profile owner, show limited access
+  // This means the current user blocked the profile owner
+  if (!isOwnProfile && blockStatus.youBlockedThem) {
+    return (
+      <div className="profil-page">
+        <Navbar />
+        
+        <div className="profil-container">
+          <Sidebar />
+          
+          <main className="profil-content">
+            <div className="profil-header">
+              <div className="cover-photo">
+                <img 
+                  src={user?.coverPhoto || '/default-cover.jpg'} 
+                  alt="Cover" 
+                  className="cover-img"
+                />
+              </div>
+              
+              <div className="profil-info">
+                <div className="profil-picture">
+                  <img 
+                    src={user?.photo || '/default-avatar.jpg'} 
+                    alt="Profil" 
+                    className="profil-avatar"
+                  />
+                </div>
+                
+                <div className="profil-details">
+                  <h1 className="profil-name">
+                    {user?.prenom} {user?.nom}
+                  </h1>
+                  <p className="profil-email">{user?.email}</p>
+                </div>
+                
+                <div className="profile-actions">
+                  <button 
+                    className={`block-btn blocked`}
+                    onClick={handleBlock}
+                  >
+                    🔓 {t('unblock')}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="profil-posts">
+              <h2>{t('posts')} (0)</h2>
+              <div className="blocked-posts-message">
+                <p>{t('blockedUserPostsMessage')}</p>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
     );
@@ -337,6 +455,12 @@ const Profil = () => {
                     onClick={handleSendMessage}
                   >
                     💬 {t('message')}
+                  </button>
+                  <button 
+                    className={`block-btn ${blockStatus.youBlockedThem ? 'blocked' : ''}`}
+                    onClick={handleBlock}
+                  >
+                    {blockStatus.youBlockedThem ? '🔓 ' + t('unblock') : '🚫 ' + t('block')}
                   </button>
                 </div>
               )}
