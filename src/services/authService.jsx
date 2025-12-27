@@ -125,6 +125,16 @@ export const authService = {
     }
   },
 
+  // Changer le mot de passe
+  async changePassword(currentPassword, newPassword) {
+    try {
+      const response = await api.put('/auth/change-password', { currentPassword, newPassword });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // Récupérer profil
   async getProfile() {
     const response = await api.get('/auth/profile');

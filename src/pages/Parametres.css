@@ -67,8 +67,9 @@
 
 .setting-info h3 {
   font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   color: var(--text-color);
+  font-weight: 600;
   transition: color 0.3s ease;
 }
 
@@ -76,11 +77,254 @@
   font-size: 0.95rem;
   color: var(--text-secondary);
   transition: color 0.3s ease;
+  margin: 0;
 }
 
 .setting-control {
   display: flex;
   align-items: center;
+}
+
+/* User Information Section Styles */
+.user-info-section {
+  background: #fff;
+  color: #000;
+  border: 1px solid var(--border-color);
+}
+
+.user-info-section h2 {
+  color: #000;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.user-info-hidden {
+  text-align: center;
+  padding: 2rem;
+}
+
+.user-info-hidden h3 {
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.user-info-hidden p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.user-info-detail {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.user-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-info-row:last-child {
+  border-bottom: none;
+}
+
+.user-info-label {
+  font-weight: 600;
+  color: #000;
+  flex: 1;
+}
+
+.user-info-value {
+  flex: 2;
+  text-align: right;
+  color: #000;
+  word-break: break-all;
+}
+
+.user-info-actions {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--border-color);
+  margin-top: 1rem;
+}
+
+/* User Posts Section Styles */
+.user-posts-container {
+  width: 100%;
+}
+
+.user-posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-posts-header h3 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.no-posts-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+  background: #e9e9e9;
+  border-color: #bbb;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-block {
+  width: 100%;
+  margin: 0.5rem 0;
+}
+
+/* Password Change Form Styles */
+.password-change-form-container {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.password-change-form {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.password-change-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.password-change-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.password-change-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.password-change-form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.password-change-form input.input-error {
+  border-color: #e53e3e;
+}
+
+.password-change-form .error-message {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.btn-cancel:hover {
+  background: var(--background-color);
+  border-color: var(--text-color);
 }
 
 /* Language selector styles */
@@ -90,7 +334,7 @@
 }
 
 .language-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: 2px solid var(--border-color);
   background: var(--card-bg);
   color: var(--text-color);
@@ -98,6 +342,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
 .language-btn:hover {
@@ -165,12 +410,15 @@ body.dark-mode .settings-page {
 
 body.dark-mode .settings-header h1,
 body.dark-mode .settings-section h2,
-body.dark-mode .setting-info h3 {
+body.dark-mode .setting-info h3,
+body.dark-mode .password-change-form label,
+body.dark-mode .user-posts-header h3 {
   color: var(--dm-text);
 }
 
 body.dark-mode .settings-header p,
-body.dark-mode .setting-info p {
+body.dark-mode .setting-info p,
+body.dark-mode .no-posts-message {
   color: var(--dm-text-secondary);
 }
 
@@ -181,7 +429,6 @@ body.dark-mode .settings-section {
 
 body.dark-mode .settings-section h2 {
   border-color: var(--dm-border);
-  color: var(--dm-text);
 }
 
 body.dark-mode .setting-item {
@@ -199,6 +446,28 @@ body.dark-mode .language-btn.active {
   background: var(--primary-color);
   color: white;
   border-color: var(--primary-color);
+}
+
+body.dark-mode .password-change-form input {
+  background: var(--dm-input-bg);
+  border-color: var(--dm-border);
+  color: var(--dm-text);
+}
+
+body.dark-mode .password-change-form input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+body.dark-mode .btn-cancel {
+  background: var(--dm-card-bg);
+  color: var(--dm-text);
+  border-color: var(--dm-border);
+}
+
+body.dark-mode .btn-cancel:hover {
+  background: var(--dm-background);
+  border-color: var(--dm-text);
 }
 
 /* Responsive design */
@@ -236,5 +505,44 @@ body.dark-mode .language-btn.active {
   
   .language-btn {
     width: 100%;
+  }
+  
+  .password-change-form-container {
+    align-items: stretch;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .setting-info p {
+    word-break: break-word;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .user-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .user-info-value {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .user-posts-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
   }
 }
