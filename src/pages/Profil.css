@@ -169,6 +169,13 @@ body.dark-mode .profil-bio {
   color: var(--profile-text-primary);
 }
 
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 /* Edit Profile Button */
 .edit-profil-btn {
   padding: 12px 28px;
@@ -197,6 +204,54 @@ body.dark-mode .edit-profil-btn {
 body.dark-mode .edit-profil-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Block Button */
+.block-btn {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  margin-left: 12px;
+}
+
+body.dark-mode .block-btn {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+}
+
+.block-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+}
+
+body.dark-mode .block-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(211, 47, 47, 0.4);
+}
+
+.block-btn.blocked {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+body.dark-mode .block-btn.blocked {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.block-btn.blocked:hover {
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+}
+
+body.dark-mode .block-btn.blocked:hover {
+  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
 }
 
 /* Edit Form */
@@ -412,6 +467,59 @@ body.dark-mode .profil-posts h2 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Blocked Profile Message */
+.blocked-profile-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 24px;
+}
+
+.blocked-profile-message h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.blocked-profile-message p {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+body.dark-mode .blocked-profile-message h2 {
+  background: linear-gradient(135deg, #ff7675, #d63031);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.dark-mode .blocked-profile-message p {
+  color: var(--profile-text-secondary);
+}
+
+/* Blocked Posts Message */
+.blocked-posts-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+body.dark-mode .blocked-posts-message {
+  color: var(--profile-text-secondary);
 }
 
 /* Loading Container */
