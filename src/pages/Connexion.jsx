@@ -45,7 +45,13 @@ const Connexion = () => {
     try {
       const result = await authService.login(data);
       if (result.success) {
-        navigate('/');
+        // Rediriger vers l'interface admin si l'utilisateur est admin
+        const currentUser = authService.getCurrentUser();
+        if (currentUser && currentUser.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(result.message);
       }

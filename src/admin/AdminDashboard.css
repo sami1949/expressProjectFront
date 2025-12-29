@@ -1,0 +1,284 @@
+/* AdminDashboard.css - Styles du dashboard admin */
+
+.admin-dashboard {
+  padding: 1.5rem;
+}
+
+/* Header de bienvenue */
+.admin-dashboard__header {
+  margin-bottom: 2rem;
+}
+
+.admin-welcome-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: white;
+}
+
+.admin-welcome-card__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.admin-welcome-card__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Section des statistiques */
+.admin-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.admin-stat-card--users {
+  background: white;
+}
+
+.admin-stat-card--posts {
+  background: white;
+}
+
+.admin-stat-card--comments {
+  background: white;
+}
+
+.admin-stat-card--active {
+  background: white;
+}
+
+.admin-stat-card__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.admin-stat-card__info {
+  flex: 1;
+}
+
+.admin-stat-card__label {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.admin-stat-card__value {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #343a40;
+}
+
+.admin-stat-card__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: #667eea;
+  color: white;
+}
+
+.admin-stat-card--users .admin-stat-card__icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.admin-stat-card--posts .admin-stat-card__icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.admin-stat-card--comments .admin-stat-card__icon {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.admin-stat-card--active .admin-stat-card__icon {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Section principale */
+.admin-dashboard__main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.admin-dashboard__activity {
+  grid-column: 1;
+}
+
+.admin-dashboard__actions {
+  grid-column: 2;
+}
+
+/* Boutons d'actions rapides */
+.admin-quick-actions {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-quick-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 0.875rem;
+  border: none;
+}
+
+.admin-quick-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.admin-quick-btn--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.admin-quick-btn--primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.admin-quick-btn--secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+}
+
+.admin-quick-btn--secondary:hover {
+  background: linear-gradient(135deg, #5c656d 0%, #394047 100%);
+}
+
+.admin-quick-btn--info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+}
+
+.admin-quick-btn--info:hover {
+  background: linear-gradient(135deg, #148da0 0%, #10707f 100%);
+}
+
+.admin-quick-btn--warning {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #212529;
+}
+
+.admin-quick-btn--warning:hover {
+  background: linear-gradient(135deg, #e0a800 0%, #c99300 100%);
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .admin-dashboard__main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .admin-dashboard__actions {
+    grid-column: 1;
+  }
+  
+  .admin-dashboard__stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1rem;
+  }
+  
+  .admin-dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-welcome-card__title {
+    font-size: 1.5rem;
+  }
+  
+  .admin-dashboard__main {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Espacement utilitaires */
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+/* Classes utilitaires */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.font-weight-bold {
+  font-weight: 700;
+}
+
+.opacity-8 {
+  opacity: 0.8;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.text-white {
+  color: white;
+}
+
+/* Classes pour les couleurs de fond */
+.bg-primary {
+  background-color: #667eea;
+}
+
+.bg-danger {
+  background-color: #f5576c;
+}
+
+.bg-success {
+  background-color: #4facfe;
+}
+
+.bg-info {
+  background-color: #38f9d7;
+}

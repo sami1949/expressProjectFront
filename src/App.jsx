@@ -17,12 +17,27 @@ import Messages from './pages/Messages';
 import Amis from './pages/Amis';
 import Notifications from './pages/Notifications';
 import Parametres from './pages/Parametres';
+import AdminTemplate from './admin/AdminTemplate';
 
 // Composant de route protégée
 const ProtectedRoute = ({ children }) => {
   if (!authService.isAuthenticated()) {
     return <Navigate to="/connexion" replace />;
   }
+  return children;
+};
+
+// Composant de route protégée pour les administrateurs
+const AdminRoute = ({ children }) => {
+  if (!authService.isAuthenticated()) {
+    return <Navigate to="/connexion" replace />;
+  }
+  
+  const currentUser = authService.getCurrentUser();
+  if (!currentUser || currentUser.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+  
   return children;
 };
 
@@ -43,6 +58,8 @@ function App() {
             <Accueil />
           </ProtectedRoute>
         } />
+                
+
         
         <Route path="/profil" element={
           <ProtectedRoute>
@@ -90,6 +107,13 @@ function App() {
           <ProtectedRoute>
             <Accueil />
           </ProtectedRoute>
+        } />
+        
+        {/* Route admin protégée */}
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminTemplate />
+          </AdminRoute>
         } />
         
         {/* Route 404 - Redirect to login if not authenticated, otherwise to home */}
