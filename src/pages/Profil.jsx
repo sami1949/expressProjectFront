@@ -8,8 +8,10 @@ import { postService } from '../services/postService';
 import { userService } from '../services/userService';
 import { followService } from '../services/followService';
 import { blockService } from '../services/blockService';
+import { reportService } from '../services/reportService';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext.jsx';
+import ReportModal from '../components/reports/ReportModal';
 import './Profil.css';
 
 const Profil = () => {
@@ -25,6 +27,7 @@ const Profil = () => {
     youBlockedThem: false,
     theyBlockedYou: false
   });
+  const [showReportModal, setShowReportModal] = useState(false);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -288,6 +291,14 @@ const Profil = () => {
     }
   };
 
+  const handleReport = () => {
+    if (isOwnProfile) {
+      toast.error(t('reportCannotSelf'));
+      return;
+    }
+    setShowReportModal(true);
+  };
+
   if (loading) {
     return (
       <div className="profil-page">
@@ -462,6 +473,13 @@ const Profil = () => {
                   >
                     {blockStatus.youBlockedThem ? '🔓 ' + t('unblock') : '🚫 ' + t('block')}
                   </button>
+                  <button 
+                    className="report-btn"
+                    onClick={handleReport}
+                    title={t('reportUser')}
+                  >
+                    ⚠️ {t('report')}
+                  </button>
                 </div>
               )}
             </div>
@@ -558,6 +576,16 @@ const Profil = () => {
               onPostDelete={handlePostDelete}
             />
           </div>
+
+          {showReportModal && (
+            <ReportModal
+              isOpen={showReportModal}
+              onClose={() => setShowReportModal(false)}
+              targetId={userId}
+              targetType="user"
+              targetName={`${user?.prenom} ${user?.nom}`}
+            />
+          )}
         </main>
       </div>
     </div>

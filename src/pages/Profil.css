@@ -254,6 +254,57 @@ body.dark-mode .block-btn.blocked:hover {
   box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
 }
 
+/* Report Button */
+.report-btn {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  margin-left: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+body.dark-mode .report-btn {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+}
+
+.report-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+}
+
+body.dark-mode .report-btn:hover {
+  box-shadow: 0 8px 25px rgba(217, 119, 6, 0.4);
+}
+
+.report-btn:active {
+  transform: translateY(-1px);
+}
+
+.report-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+  color: #667eea;
+}
+
+.report-btn:hover::before {
+  left: 100%;
+}
+
 /* Edit Form */
 .profil-edit-form {
   background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 100%);
