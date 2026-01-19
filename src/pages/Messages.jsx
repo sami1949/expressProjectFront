@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
@@ -7,10 +7,12 @@ import { userService } from '../services/userService';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../contexts/LanguageContext.jsx';
+import { useTheme } from '../contexts/ThemeContext';
 import './Messages.css';
 
 const Messages = () => {
   const { t } = useLanguage();
+  const { isDarkMode } = useTheme();
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -23,23 +25,66 @@ const Messages = () => {
   const [audioFile, setAudioFile] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
+  const [showConversationsList, setShowConversationsList] = useState(false);
   const messagesEndRef = useRef(null);
   const currentUser = authService.getCurrentUser();
   const [searchParams] = useSearchParams();
   const userIdFromUrl = searchParams.get('userId');
+  
+  // Refs pour le polling et l'enregistrement audio
   const pollingIntervalRef = useRef(null);
   const conversationsPollingRef = useRef(null);
   const fileInputRef = useRef(null);
   const audioInputRef = useRef(null);
   const recordingIntervalRef = useRef(null);
   const mediaStreamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  
   const navigate = useNavigate();
 
+  // Gérer la taille de l'écran
+  const [isMobile, setIsMobile] = useState(() => {
+    return window.innerWidth < 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 768;
+      setIsMobile(newIsMobile);
+      
+      // Sur desktop, toujours afficher la liste des conversations
+      if (!newIsMobile) {
+        setShowConversationsList(true);
+      }
+      
+      // Forcer le recalcul du layout
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+    };
+
+    // Écouter les changements d'orientation aussi
+    const handleOrientationChange = () => {
+      setTimeout(handleResize, 300);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    // Appel initial
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, []);
+
+  // Charger les conversations
   useEffect(() => {
     loadConversations();
     
+    // Polling pour les nouvelles conversations
     conversationsPollingRef.current = setInterval(() => {
       loadConversations();
     }, 10000);
@@ -48,34 +93,44 @@ const Messages = () => {
       if (conversationsPollingRef.current) {
         clearInterval(conversationsPollingRef.current);
       }
-      // Cleanup media stream on unmount
+      // Nettoyer le stream média
       if (mediaStreamRef.current) {
         mediaStreamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
 
+  // Gérer l'URL avec userId
   useEffect(() => {
-    if (userIdFromUrl && conversations.length === 0) {
-      loadUserAndStartConversation(userIdFromUrl);
-    } else if (userIdFromUrl && conversations.length > 0) {
+    if (userIdFromUrl) {
       const existingConv = conversations.find(
         conv => conv.autreUtilisateur?._id === userIdFromUrl
       );
+      
       if (existingConv) {
-        setSelectedConversation(existingConv.autreUtilisateur);
+        handleSelectConversation(existingConv.autreUtilisateur);
       } else {
         loadUserAndStartConversation(userIdFromUrl);
       }
     }
   }, [userIdFromUrl, conversations]);
 
+  // Gérer la sélection automatique de la première conversation sur mobile
+  useEffect(() => {
+    if (conversations.length > 0 && !selectedConversation && !userIdFromUrl && isMobile) {
+      // Sur mobile, afficher d'abord la liste
+      setShowConversationsList(true);
+    } else if (conversations.length > 0 && !selectedConversation && !isMobile) {
+      // Sur desktop, sélectionner la première conversation
+      handleSelectConversation(conversations[0].autreUtilisateur);
+    }
+  }, [conversations, selectedConversation, isMobile]);
+
   const loadUserAndStartConversation = async (userId) => {
     try {
       const response = await userService.getUserById(userId);
       if (response.success) {
-        setSelectedConversation(response.data);
-        loadMessages(userId);
+        handleSelectConversation(response.data);
       }
     } catch (error) {
       console.error('Erreur chargement utilisateur:', error);
@@ -83,17 +138,27 @@ const Messages = () => {
     }
   };
 
+  const handleSelectConversation = (user) => {
+    setSelectedConversation(user);
+    setShowConversationsList(false); // Fermer la liste sur mobile
+    loadMessages(user._id);
+  };
+
+  // Charger les messages de la conversation
   useEffect(() => {
     if (selectedConversation) {
       loadMessages(selectedConversation._id);
       
+      // Polling pour les nouveaux messages
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
       }
       
+      // Réduire la fréquence de polling sur mobile pour économiser la batterie
+      const pollingInterval = isMobile ? 5000 : 3000;
       pollingIntervalRef.current = setInterval(() => {
         loadMessages(selectedConversation._id);
-      }, 3000);
+      }, pollingInterval);
     }
     
     return () => {
@@ -101,114 +166,89 @@ const Messages = () => {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [selectedConversation]);
+  }, [selectedConversation, isMobile]);
 
+  // Scroller vers le bas quand de nouveaux messages arrivent
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        // Pour mobile, utiliser un scroll instantané pour éviter les glitches
+        if (isMobile) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'instant' });
+        } else {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }, isMobile ? 50 : 100);
   };
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     try {
-      if (!loading) {
-        const response = await messageService.getConversations();
-        
-        if (response.success) {
-          const transformedConversations = response.data.map(conv => ({
+      const response = await messageService.getConversations();
+      
+      if (response.success) {
+        const transformedConversations = response.data.map(conv => ({
+          _id: conv.userId,
+          autreUtilisateur: {
             _id: conv.userId,
-            autreUtilisateur: {
-              _id: conv.userId,
-              nom: conv.user.nom,
-              prenom: conv.user.prenom,
-              photo: conv.user.photo,
-              fullName: `${conv.user.prenom} ${conv.user.nom}`
-            },
-            dernierMessage: {
-              contenu: conv.lastMessage.contenu,
-              image: conv.lastMessage.image,
-              audio: conv.lastMessage.audio,
-              date_envoi: conv.lastMessage.date_envoi,
-              lu: conv.lastMessage.lu
-            },
-            messagesNonLus: conv.unreadCount || 0
-          }));
-          
-          setConversations(transformedConversations);
-        }
-      } else {
-        setLoading(true);
-        const response = await messageService.getConversations();
+            nom: conv.user.nom,
+            prenom: conv.user.prenom,
+            photo: conv.user.photo,
+            fullName: `${conv.user.prenom} ${conv.user.nom}`,
+            bio: conv.user.bio || ''
+          },
+          dernierMessage: {
+            contenu: conv.lastMessage?.contenu || '',
+            image: conv.lastMessage?.image,
+            audio: conv.lastMessage?.audio,
+            date_envoi: conv.lastMessage?.date_envoi || new Date().toISOString(),
+            lu: conv.lastMessage?.lu || false
+          },
+          messagesNonLus: conv.unreadCount || 0
+        }));
         
-        if (response.success) {
-          const transformedConversations = response.data.map(conv => ({
-            _id: conv.userId,
-            autreUtilisateur: {
-              _id: conv.userId,
-              nom: conv.user.nom,
-              prenom: conv.user.prenom,
-              photo: conv.user.photo,
-              fullName: `${conv.user.prenom} ${conv.user.nom}`
-            },
-            dernierMessage: {
-              contenu: conv.lastMessage.contenu,
-              image: conv.lastMessage.image,
-              audio: conv.lastMessage.audio,
-              date_envoi: conv.lastMessage.date_envoi,
-              lu: conv.lastMessage.lu
-            },
-            messagesNonLus: conv.unreadCount || 0
-          }));
-          
-          setConversations(transformedConversations);
-        }
-        setLoading(false);
+        setConversations(transformedConversations);
       }
     } catch (error) {
       console.error('Erreur chargement conversations:', error);
       if (loading) {
         toast.error(t('errorLoadingConversations'));
-        setLoading(false);
       }
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [loading, t]);
 
   const loadMessages = async (userId) => {
     try {
       const response = await messageService.getConversationMessages(userId);
       
       if (response.success) {
-        const newMessagesJson = JSON.stringify(response.data.map(m => m._id));
-        const currentMessagesJson = JSON.stringify(messages.map(m => m._id));
+        setMessages(response.data);
         
-        if (newMessagesJson !== currentMessagesJson) {
-          setMessages(response.data);
-          
-          response.data.forEach(msg => {
-            const currentUserId = currentUser.id || currentUser._id;
-            if (!msg.lu && msg.id_destinataire === currentUserId) {
-              messageService.markAsRead(msg._id).catch(err => 
-                console.error('Erreur marquage lu:', err)
-              );
-            }
-          });
-        }
+        // Marquer les messages comme lus
+        response.data.forEach(msg => {
+          const currentUserId = currentUser.id || currentUser._id;
+          if (!msg.lu && msg.id_destinataire === currentUserId) {
+            messageService.markAsRead(msg._id).catch(err => 
+              console.error('Erreur marquage lu:', err)
+            );
+          }
+        });
       }
     } catch (error) {
       console.error('Erreur chargement messages:', error);
-      if (error.response?.status !== 404) {
-        if (messages.length === 0) {
-          toast.error(t('errorLoadingMessages'));
-        }
-      }
       if (messages.length === 0) {
-        setMessages([]);
+        toast.error(t('errorLoadingMessages'));
       }
     }
   };
 
+  // Gestion des fichiers image
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -232,6 +272,7 @@ const Messages = () => {
     }
   };
 
+  // Gestion des fichiers audio
   const handleAudioChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -255,9 +296,9 @@ const Messages = () => {
     }
   };
 
+  // Enregistrement audio
   const startRecording = async () => {
     try {
-      console.log('Demande d\'accès au microphone...');
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -267,84 +308,61 @@ const Messages = () => {
       });
       
       mediaStreamRef.current = stream;
-      console.log('Accès au microphone accordé');
       
-      // Check browser compatibility for audio formats
+      // Déterminer le type MIME supporté
       let mimeType = 'audio/webm';
       if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
         mimeType = 'audio/webm;codecs=opus';
-      } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-        mimeType = 'audio/ogg;codecs=opus';
-      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        mimeType = 'audio/mp4';
       }
       
       const recorder = new MediaRecorder(stream, { mimeType });
       const chunks = [];
       
       recorder.ondataavailable = (event) => {
-        console.log('Data available:', event.data.size, 'bytes');
         if (event.data.size > 0) {
           chunks.push(event.data);
-          console.log('Total chunks:', chunks.length);
         }
       };
       
       recorder.onstop = async () => {
-        console.log('Enregistrement arrêté, chunks:', chunks.length);
-        
         if (chunks.length > 0) {
           const audioBlob = new Blob(chunks, { type: mimeType });
-          console.log('Blob audio créé:', audioBlob.size, 'bytes', 'type:', audioBlob.type);
           
-          // Convert to base64
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64data = reader.result;
-            console.log('Base64 length:', base64data.length);
             setAudioPreview(base64data);
             setAudioFile(base64data);
             toast.success(t('audioRecordedSuccessfully'));
           };
-          reader.onerror = () => {
-            console.error('Erreur FileReader');
-            toast.error(t('errorConvertingAudio'));
-          };
           reader.readAsDataURL(audioBlob);
-        } else {
-          console.log('Aucune donnée audio enregistrée');
-          toast.error(t('noAudioDataRecorded'));
         }
         
-        // Stop all tracks
+        // Arrêter toutes les pistes
         if (mediaStreamRef.current) {
           mediaStreamRef.current.getTracks().forEach(track => track.stop());
           mediaStreamRef.current = null;
         }
       };
       
-      setMediaRecorder(recorder);
-      setAudioChunks([]);
+      mediaRecorderRef.current = recorder;
       
-      // Start recording with timeslice for better data collection
-      recorder.start(100); // Collect data every 100ms
+      // Démarrer l'enregistrement
+      recorder.start(100);
       setIsRecording(true);
       setRecordingTime(0);
       
-      // Start timer
+      // Démarrer le minuteur
       recordingIntervalRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
       
-      console.log('Enregistrement démarré avec timeslice de 100ms');
       toast.info(t('recordingInProgress'), { autoClose: 1000 });
       
     } catch (error) {
       console.error('Erreur enregistrement audio:', error);
       if (error.name === 'NotAllowedError') {
         toast.error(t('microphonePermissionDenied'));
-      } else if (error.name === 'NotFoundError') {
-        toast.error(t('noMicrophoneDetected'));
       } else {
         toast.error(t('cannotAccessMicrophone'));
       }
@@ -353,15 +371,13 @@ const Messages = () => {
   };
 
   const stopRecording = () => {
-    if (mediaRecorder && isRecording) {
-      // Vérifier la durée minimale (1 seconde)
+    if (mediaRecorderRef.current && isRecording) {
       if (recordingTime < 1) {
         toast.warning(t('recordingTooShort'));
         return;
       }
       
-      console.log('Arrêt de l\'enregistrement...', recordingTime, 'secondes');
-      mediaRecorder.stop();
+      mediaRecorderRef.current.stop();
       setIsRecording(false);
       if (recordingIntervalRef.current) {
         clearInterval(recordingIntervalRef.current);
@@ -370,11 +386,9 @@ const Messages = () => {
   };
 
   const cancelRecording = () => {
-    if (mediaRecorder && isRecording) {
-      console.log('Annulation de l\'enregistrement...');
-      mediaRecorder.stop();
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
       setIsRecording(false);
-      setAudioChunks([]);
       setAudioPreview(null);
       setAudioFile(null);
       if (recordingIntervalRef.current) {
@@ -388,6 +402,7 @@ const Messages = () => {
     }
   };
 
+  // Supprimer les prévisualisations
   const removeImage = () => {
     setImagePreview(null);
     setImageFile(null);
@@ -404,54 +419,40 @@ const Messages = () => {
     }
   };
 
+  // Envoyer un message
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if ((!messageText.trim() && !imageFile && !audioFile) || !selectedConversation) return;
 
     try {
       setSending(true);
-      console.log('=== ENVOI MESSAGE ===');
-      console.log('Destinataire:', selectedConversation._id);
-      console.log('Texte:', messageText.trim() || '(vide)');
-      console.log('Image:', imageFile ? 'OUI' : 'NON');
-      console.log('Audio:', audioFile ? 'OUI' : 'NON');
       
       let imageData = null;
       if (imageFile) {
-        console.log('Conversion image en base64...');
         const reader = new FileReader();
         imageData = await new Promise((resolve, reject) => {
           reader.onload = (e) => resolve(e.target.result);
           reader.onerror = (e) => reject(e);
           reader.readAsDataURL(imageFile);
         });
-        console.log('Image convertie, taille:', imageData.length);
       }
       
       let audioData = null;
       if (audioFile && !isRecording) {
         if (typeof audioFile === 'string' && audioFile.startsWith('data:audio')) {
-          console.log('Audio déjà en base64, taille:', audioFile.length);
           audioData = audioFile;
         } else {
-          console.log('Conversion audio en base64...');
           const reader = new FileReader();
           audioData = await new Promise((resolve, reject) => {
             reader.onload = (e) => resolve(e.target.result);
             reader.onerror = (e) => reject(e);
             reader.readAsDataURL(audioFile);
           });
-          console.log('Audio converti, taille:', audioData.length);
         }
       }
       
-      console.log('=== DONNÉES À ENVOYER ===');
-      console.log('audioData présent:', audioData ? 'OUI' : 'NON');
-      console.log('audioData length:', audioData ? audioData.length : 0);
-      
       let response;
       if (imageFile && audioFile) {
-        console.log('Envoi avec image ET audio');
         response = await messageService.sendMessageWithMedia(
           selectedConversation._id,
           messageText.trim(),
@@ -459,29 +460,23 @@ const Messages = () => {
           audioData
         );
       } else if (imageFile) {
-        console.log('Envoi avec image seulement');
         response = await messageService.sendMessageWithImage(
           selectedConversation._id,
           messageText.trim(),
           imageData
         );
       } else if (audioFile) {
-        console.log('Envoi avec audio seulement');
-        console.log('Audio data à envoyer:', audioData.substring(0, 100) + '...');
         response = await messageService.sendMessageWithAudio(
           selectedConversation._id,
           messageText.trim(),
           audioData
         );
       } else {
-        console.log('Envoi texte seulement');
         response = await messageService.sendMessage(
           selectedConversation._id,
           messageText.trim()
         );
       }
-      
-      console.log('Réponse serveur:', response);
       
       if (response.success) {
         setMessages([...messages, response.data]);
@@ -489,20 +484,17 @@ const Messages = () => {
         removeImage();
         removeAudio();
         loadConversations();
-        setTimeout(() => {
-          loadMessages(selectedConversation._id);
-        }, 500);
         toast.success(t('messageSent'));
       }
     } catch (error) {
       console.error('Erreur envoi message:', error);
-      console.error('Détails erreur:', error.response?.data);
       toast.error(error.response?.data?.message || t('errorSendingMessage'));
     } finally {
       setSending(false);
     }
   };
 
+  // Formater l'heure
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -524,18 +516,59 @@ const Messages = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  // Naviguer vers le profil
+  const goToProfile = (userId) => {
+    if (userId && userId !== currentUser?.id) {
+      navigate(`/profil/${userId}`);
+    } else if (userId === currentUser?.id) {
+      navigate('/profil');
+    }
+  };
+
   return (
     <div className="messages-page">
       <Navbar />
       
       <div className="messages-container">
-        <Sidebar />
+        {/* Header mobile */}
+        {isMobile && (
+          <div className="mobile-header">
+            <h1>{t('messages')}</h1>
+            <button 
+              className="mobile-menu-toggle" 
+              onClick={() => setShowConversationsList(true)}
+              aria-label={t('showConversationsList')}
+            >
+              ≡
+            </button>
+          </div>
+        )}
+        
+        {/* Sidebar desktop */}
+        <div className="sidebar-wrapper">
+          <Sidebar />
+        </div>
         
         <main className="messages-content">
           <div className="messages-wrapper">
-            {/* Conversations List */}
-            <div className="conversations-list">
-              <h2 className="conversations-title">{t('messages')}</h2>
+            {/* Liste des conversations */}
+            <div className={`conversations-list ${showConversationsList || !isMobile ? 'active' : ''}`}>
+              {isMobile && (
+                <div className="conversations-header">
+                  <h2>{t('messages')}</h2>
+                  <button 
+                    className="close-conversations" 
+                    onClick={() => setShowConversationsList(false)}
+                    aria-label={t('closeConversationsList')}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+              
+              {!isMobile && (
+                <h2 className="conversations-title">{t('messages')}</h2>
+              )}
               
               {loading ? (
                 <p className="loading-text">{t('loading')}</p>
@@ -546,13 +579,14 @@ const Messages = () => {
                   {conversations.map(conv => {
                     const otherUser = conv.autreUtilisateur;
                     if (!otherUser) return null;
+                    
                     return (
                       <div
                         key={conv._id || otherUser._id}
                         className={`conversation-item ${
                           selectedConversation?._id === otherUser._id ? 'active' : ''
                         }`}
-                        onClick={() => setSelectedConversation(otherUser)}
+                        onClick={() => handleSelectConversation(otherUser)}
                       >
                         <img
                           src={otherUser.photo || 'https://via.placeholder.com/48?text=User'}
@@ -586,16 +620,28 @@ const Messages = () => {
               )}
             </div>
 
-            {/* Messages Area */}
+            {/* Zone des messages */}
             <div className="messages-area">
               {!selectedConversation ? (
                 <div className="no-conversation-selected">
-                  <p>{t('selectConversationToStart')}</p>
+                  <p>{isMobile ? t('selectConversationToStart') : t('selectConversationDesktop')}</p>
                 </div>
               ) : (
                 <>
-                  {/* Conversation Header */}
+                  {/* En-tête de la conversation */}
                   <div className="conversation-header">
+                    {isMobile && (
+                      <button 
+                        className="mobile-back-button" 
+                        onClick={() => {
+                          setSelectedConversation(null);
+                          setShowConversationsList(true);
+                        }}
+                        aria-label={t('backToConversations')}
+                      >
+                        ←
+                      </button>
+                    )}
                     <img
                       src={selectedConversation.photo || 'https://via.placeholder.com/48?text=User'}
                       alt={selectedConversation.fullName || `${selectedConversation.prenom} ${selectedConversation.nom}`}
@@ -603,29 +649,13 @@ const Messages = () => {
                       onError={(e) => {
                         e.target.src = 'https://via.placeholder.com/48?text=User';
                       }}
-                      onClick={() => {
-                        // Navigate to user's profile when clicking on avatar
-                        const userId = selectedConversation._id;
-                        if (userId && userId !== currentUser?.id) {
-                          navigate(`/profil/${userId}`);
-                        } else if (userId === currentUser?.id) {
-                          navigate('/profil');
-                        }
-                      }}
+                      onClick={() => goToProfile(selectedConversation._id)}
                       style={{ cursor: 'pointer' }}
                     />
                     <div className="header-info">
                       <h3 
                         className="header-name"
-                        onClick={() => {
-                          // Navigate to user's profile when clicking on name
-                          const userId = selectedConversation._id;
-                          if (userId && userId !== currentUser?.id) {
-                            navigate(`/profil/${userId}`);
-                          } else if (userId === currentUser?.id) {
-                            navigate('/profil');
-                          }
-                        }}
+                        onClick={() => goToProfile(selectedConversation._id)}
                         style={{ cursor: 'pointer' }}
                       >
                         {selectedConversation.prenom} {selectedConversation.nom}
@@ -636,7 +666,7 @@ const Messages = () => {
                     </div>
                   </div>
 
-                  {/* Messages List */}
+                  {/* Liste des messages */}
                   <div className="messages-list">
                     {messages.length === 0 ? (
                       <div className="no-messages">
@@ -646,6 +676,7 @@ const Messages = () => {
                       messages.map(msg => {
                         const currentUserId = currentUser.id || currentUser._id;
                         const isSent = msg.id_expediteur === currentUserId || msg.id_expediteur?._id === currentUserId;
+                        
                         return (
                           <div
                             key={msg._id}
@@ -669,7 +700,7 @@ const Messages = () => {
                               )}
                               {msg.audio && (
                                 <div className="message-audio">
-                                  <audio controls>
+                                  <audio controls preload="metadata">
                                     <source src={msg.audio} type="audio/webm" />
                                     <source src={msg.audio} type="audio/ogg" />
                                     <source src={msg.audio} type="audio/mp4" />
@@ -692,8 +723,9 @@ const Messages = () => {
                     <div ref={messagesEndRef} />
                   </div>
 
-                  {/* Message Input */}
+                  {/* Formulaire d'envoi */}
                   <form onSubmit={handleSendMessage} className="message-input-form">
+                    {/* Prévisualisation des médias */}
                     {(imagePreview || audioPreview) && (
                       <div className="media-preview-container">
                         {imagePreview && (
@@ -729,7 +761,7 @@ const Messages = () => {
                       </div>
                     )}
                     
-                    {/* Recording indicator */}
+                    {/* Indicateur d'enregistrement */}
                     {isRecording && (
                       <div className="recording-indicator">
                         <div className="recording-dot"></div>
@@ -745,6 +777,7 @@ const Messages = () => {
                       </div>
                     )}
                     
+                    {/* Contrôles d'envoi */}
                     <div className="message-input-container">
                       <input
                         type="text"

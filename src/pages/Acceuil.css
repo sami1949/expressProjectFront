@@ -4,6 +4,8 @@
   background: linear-gradient(135deg, #f8f9fd 0%, #e9ecf5 100%);
   position: relative;
   background: var(--background-color);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Decorative Background Elements */
@@ -21,14 +23,27 @@
 
 /* Container */
 .accueil-container {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 32px;
   position: relative;
   z-index: 1;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* Sidebar Container - Toujours fixé à gauche */
+.sidebar-wrapper {
+  position: sticky;
+  top: 100px; /* Ajuster selon la hauteur de votre navbar */
+  height: calc(100vh - 140px); /* Hauteur adaptative */
+  overflow-y: auto;
+  z-index: 10;
+  align-self: flex-start; /* Important pour garder à gauche */
 }
 
 /* Main Content */
@@ -37,6 +52,7 @@
   margin: 0 auto;
   width: 100%;
   animation: fadeIn 0.5s ease-out;
+  box-sizing: border-box;
 }
 
 /* Loading State */
@@ -49,6 +65,7 @@
   backdrop-filter: blur(10px);
   animation: scaleIn 0.5s ease-out;
   background: var(--card-bg);
+  margin-top: 24px;
 }
 
 .loading-posts p {
@@ -59,6 +76,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: var(--text-color);
+  margin: 0;
 }
 
 .loading-posts p::before {
@@ -145,10 +163,48 @@ body.dark-mode .load-more-btn:hover {
   box-shadow: 0 12px 35px rgba(165, 180, 252, 0.5) !important;
 }
 
-/* Responsive Design */
+/* Scrollbar personnalisée pour le sidebar */
+.sidebar-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-wrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.sidebar-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+body.dark-mode .sidebar-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .sidebar-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design - LE SIDEBAR RESTE TOUJOURS À GAUCHE */
+
+/* Tablette et petits écrans */
+@media (max-width: 1200px) {
+  .accueil-container {
+    max-width: 100%;
+    padding: 20px;
+    gap: 24px;
+    grid-template-columns: 250px 1fr;
+  }
+  
+  .sidebar-wrapper {
+    width: 250px;
+  }
+}
+
 @media (max-width: 1024px) {
   .accueil-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: 240px 1fr;
     gap: 20px;
     padding: 16px;
   }
@@ -156,23 +212,263 @@ body.dark-mode .load-more-btn:hover {
   .main-content {
     max-width: 100%;
   }
+  
+  .sidebar-wrapper {
+    width: 240px;
+    top: 90px;
+    height: calc(100vh - 120px);
+  }
 }
 
+/* Mobile - IMPORTANT : Le sidebar reste à gauche mais devient plus compact */
+@media (max-width: 900px) {
+  .accueil-container {
+    grid-template-columns: 200px 1fr; /* Réduction de la largeur du sidebar */
+    gap: 16px;
+    padding: 12px;
+  }
+  
+  .sidebar-wrapper {
+    width: 200px;
+    height: calc(100vh - 100px);
+    position: sticky;
+    top: 80px;
+  }
+  
+  .main-content {
+    max-width: 100%;
+  }
+}
+
+/* Mobile très petit - On centre le contenu principal */
+@media (max-width: 768px) {
+   .accueil-container {
+    grid-template-columns: 1fr !important;
+    padding: 12px !important;
+  }
+  
+  .sidebar-wrapper {
+    display: none; /* Cacher le sidebar sur mobile */
+  }
+  
+  .main-content {
+    grid-area: main;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 10px; /* Ajouter un peu de marge latérale */
+  }
+}
+
+/* Petit mobile - On centre le contenu principal et on cache le sidebar */
 @media (max-width: 768px) {
   .accueil-page::before {
     height: 200px;
   }
   
   .accueil-container {
-    padding: 12px;
+    grid-template-columns: 1fr; /* Une seule colonne */
+    grid-template-areas: "main";
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  
+  .sidebar-wrapper {
+    display: none; /* Cacher le sidebar sur mobile */
+  }
+  
+  .main-content {
+    grid-area: main;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 10px; /* Ajouter un peu de marge latérale */
   }
   
   .loading-posts {
     padding: 60px 20px;
+    margin-top: 16px;
+    border-radius: var(--border-radius);
   }
   
   .load-more-btn {
     margin-top: 24px;
     padding: 16px;
+    font-size: 15px;
+  }
+  
+  .loading-posts p {
+    font-size: 18px;
+  }
+  
+  .loading-posts p::before {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+}
+
+/* Très petit mobile - Sidebar minimal mais toujours visible */
+@media (max-width: 640px) {
+  .accueil-container {
+    grid-template-columns: 160px 1fr;
+    gap: 10px;
+    padding: 8px;
+  }
+  
+  .sidebar-wrapper {
+    width: 160px;
+    height: calc(100vh - 80px);
+    top: 60px;
+  }
+  
+  /* Cacher le scrollbar sur très petits écrans */
+  .sidebar-wrapper::-webkit-scrollbar {
+    width: 3px;
+  }
+}
+
+/* Mobile ultra compact - Sidebar très étroit */
+@media (max-width: 480px) {
+  .accueil-container {
+    grid-template-columns: 140px 1fr; /* Minimum pour rester utilisable */
+    gap: 8px;
+    padding: 6px;
+  }
+  
+  .sidebar-wrapper {
+    width: 140px;
+    height: calc(100vh - 70px);
+    top: 50px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .loading-posts {
+    padding: 40px 16px;
+    margin-top: 12px;
+  }
+  
+  .load-more-btn {
+    margin-top: 20px;
+    padding: 14px;
+    font-size: 14px;
+  }
+  
+  .loading-posts p {
+    font-size: 16px;
+  }
+  
+  .loading-posts p::before {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Option alternative : pour les écrans trop petits, on peut masquer le sidebar */
+@media (max-width: 360px) {
+  .accueil-container {
+    grid-template-columns: 1fr; /* Sidebar caché */
+    padding: 8px;
+  }
+  
+  /* Bouton pour afficher/masquer le sidebar sur très petit écran */
+  .sidebar-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  /* Quand le sidebar est caché */
+  .sidebar-wrapper.hidden-on-mobile {
+    display: none;
+  }
+  
+  .sidebar-wrapper.visible-on-mobile {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background: var(--card-bg);
+    z-index: 999;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .loading-posts {
+    padding: 30px 12px;
+  }
+  
+  .load-more-btn {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+/* Support pour l'orientation paysage */
+@media (max-height: 500px) and (orientation: landscape) {
+  .accueil-page::before {
+    height: 150px;
+  }
+  
+  .loading-posts {
+    padding: 40px 20px;
+  }
+  
+  .loading-posts p::before {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  /* Ajustement du sidebar en mode paysage */
+  .sidebar-wrapper {
+    height: calc(100vh - 100px);
+  }
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

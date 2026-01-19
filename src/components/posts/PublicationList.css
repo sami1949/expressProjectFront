@@ -258,3 +258,36 @@
     font-size: 36px;
   }
 }
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .publication-list {
+    gap: 12px;
+  }
+  
+  .no-posts,
+  .loading-posts {
+    padding: 40px 12px;
+  }
+  
+  .no-posts p,
+  .loading-posts p {
+    font-size: 14px;
+  }
+  
+  .no-posts p::before {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  
+  .loading-posts p::before {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  .load-more-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+}

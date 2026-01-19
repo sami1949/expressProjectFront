@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { authService } from './services/authService';
+
+// Components
+import Navbar from './components/layout/Navbar';
+import Sidebar from './components/layout/Sidebar';
 
 // Pages
 import Connexion from './pages/Connexion';
@@ -115,20 +119,12 @@ function App() {
             <AdminTemplate />
           </AdminRoute>
         } />
-        
-        {/* Route 404 - Redirect to login if not authenticated, otherwise to home */}
-        <Route path="*" element={
-          authService.isAuthenticated() ? 
-          <Navigate to="/" replace /> : 
-          <Navigate to="/connexion" replace />
-        } />
       </Routes>
-      
       <ToastContainer 
         position="top-right"
-        autoClose={3000}
+        autoClose={5000}
         hideProgressBar={false}
-        newestOnTop
+        newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

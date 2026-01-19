@@ -55,22 +55,29 @@
 .setting-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--border-color);
   transition: border-color 0.3s ease;
+  gap: 1.5rem;
 }
 
 .setting-item:last-child {
   border-bottom: none;
 }
 
+.setting-info {
+  flex: 1;
+  min-width: 0; /* Permet le wrapping correct */
+}
+
 .setting-info h3 {
   font-size: 1.2rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   color: var(--text-color);
   font-weight: 600;
   transition: color 0.3s ease;
+  word-break: break-word;
 }
 
 .setting-info p {
@@ -78,11 +85,14 @@
   color: var(--text-secondary);
   transition: color 0.3s ease;
   margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .setting-control {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 /* User Information Section Styles */
@@ -122,9 +132,10 @@
 .user-info-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--border-color);
+  gap: 1rem;
 }
 
 .user-info-row:last-child {
@@ -135,13 +146,14 @@
   font-weight: 600;
   color: #000;
   flex: 1;
+  min-width: 120px;
 }
 
 .user-info-value {
   flex: 2;
   text-align: right;
   color: #000;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .user-info-actions {
@@ -164,11 +176,15 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .user-posts-header h3 {
   margin: 0;
   color: var(--text-color);
+  flex: 1;
+  min-width: 200px;
 }
 
 .no-posts-message {
@@ -193,6 +209,8 @@
   transition: all 0.3s ease;
   text-align: center;
   font-size: 1rem;
+  white-space: nowrap;
+  min-height: 48px; /* Augmenté pour mobile */
 }
 
 .btn-primary {
@@ -219,6 +237,7 @@
 .btn-small {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
+  min-height: 40px; /* Augmenté pour mobile */
 }
 
 .btn-block {
@@ -231,6 +250,7 @@
   flex-direction: column;
   align-items: stretch;
   width: 100%;
+  gap: 0;
 }
 
 .password-change-form {
@@ -248,6 +268,7 @@
   font-weight: 600;
   color: var(--text-color);
   transition: color 0.3s ease;
+  font-size: 0.95rem;
 }
 
 .password-change-form input {
@@ -260,6 +281,7 @@
   color: var(--text-color);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
+  min-height: 48px; /* Augmenté pour mobile */
 }
 
 .password-change-form input:focus {
@@ -283,6 +305,7 @@
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .btn-submit {
@@ -296,6 +319,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
+  min-width: 140px;
+  min-height: 48px; /* Augmenté pour mobile */
 }
 
 .btn-submit:hover:not(:disabled) {
@@ -320,6 +345,8 @@
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
+  min-width: 140px;
+  min-height: 48px; /* Augmenté pour mobile */
 }
 
 .btn-cancel:hover {
@@ -331,6 +358,7 @@
 .language-selector {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .language-btn {
@@ -343,6 +371,10 @@
   font-weight: 600;
   transition: all 0.3s ease;
   font-size: 1rem;
+  min-height: 48px; /* Augmenté pour mobile */
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
 }
 
 .language-btn:hover {
@@ -363,6 +395,7 @@
   display: inline-block;
   width: 60px;
   height: 34px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -470,79 +503,451 @@ body.dark-mode .btn-cancel:hover {
   border-color: var(--dm-text);
 }
 
-/* Responsive design */
+/* =========================== */
+/* RESPONSIVE DESIGN           */
+/* =========================== */
+
+/* Tablets (768px and below) */
 @media (max-width: 768px) {
+  
   .settings-page {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
+  }
+  
+  .settings-header {
+    margin-bottom: 1.5rem;
   }
   
   .settings-header h1 {
     font-size: 2rem;
+    line-height: 1.3;
+  }
+  
+  .settings-header p {
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0 1rem;
   }
   
   .settings-content {
     padding: 0 1rem;
+    max-width: 100%;
   }
   
   .settings-section {
     padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+  
+  .settings-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
   }
   
   .setting-item {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 1rem;
+    padding: 1.25rem 0;
+  }
+  
+  .setting-info h3 {
+    font-size: 1.1rem;
+  }
+  
+  .setting-info p {
+    font-size: 0.9rem;
   }
   
   .setting-control {
-    align-self: flex-end;
+    align-self: flex-start;
+    width: 100%;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+    min-height: 56px; /* Augmenté pour tablette */
+  }
+  
+  .btn-small {
+    width: auto;
+    padding: 0.65rem 1.2rem;
+    min-height: 50px; /* Augmenté pour tablette */
   }
   
   .language-selector {
     flex-direction: column;
-    gap: 0.5rem;
+    width: 100%;
   }
   
   .language-btn {
     width: 100%;
+    padding: 0.9rem 1.5rem;
+    min-height: 56px; /* Augmenté pour tablette */
   }
   
-  .password-change-form-container {
-    align-items: stretch;
+  .switch {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+    width: 56px; /* Un peu plus grand */
+    height: 32px;
+  }
+  
+  /* Password form responsive */
+  .password-change-form input {
+    padding: 0.9rem;
+    font-size: 1rem;
+    min-height: 56px; /* Augmenté pour tablette */
   }
   
   .form-actions {
     flex-direction: column;
+    gap: 0.75rem;
   }
   
-  .setting-info p {
-    word-break: break-word;
+  .btn-submit,
+  .btn-cancel {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    min-height: 56px; /* Augmenté pour tablette */
   }
   
-  .btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
+  /* User info responsive */
+  .user-info-hidden {
+    padding: 1.5rem 1rem;
   }
   
-  .btn-small {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
+  .user-info-hidden h3 {
+    font-size: 1.2rem;
   }
   
   .user-info-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    padding: 1rem 0;
+  }
+  
+  .user-info-label,
+  .user-info-value {
+    width: 100%;
+    text-align: left;
+  }
+  
+  .user-info-label {
+    min-width: auto;
+    font-size: 0.95rem;
   }
   
   .user-info-value {
-    text-align: left;
+    font-size: 1rem;
+    padding-left: 0.5rem;
+  }
+  
+  .user-info-actions {
+    padding-top: 1.25rem;
+  }
+  
+  /* User posts responsive */
+  .user-posts-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .user-posts-header h3 {
+    min-width: auto;
     width: 100%;
   }
   
-  .user-posts-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+  .posts-list {
+    gap: 1.25rem;
+  }
+}
+
+/* Mobile phones (480px and below) */
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 1.25 rem 0; /* Augmenté */
+  }
+  
+  .settings-header {
+    margin-bottom: 1.75rem; /* Augmenté */
+  }
+  
+  .settings-header h1 {
+    font-size: 1.9rem; /* Augmenté */
+    padding: 0 0.5rem;
+    margin-bottom: 0.75rem; /* Augmenté */
+  }
+  
+  .settings-header p {
+    font-size: 1.05rem; /* Augmenté */
+    padding: 0 0.5rem;
+    line-height: 1.6; /* Augmenté */
+  }
+  
+  .settings-section {
+    padding: 1.5rem; /* Augmenté */
+    margin-bottom: 1.5rem; /* Augmenté */
+    border-radius: 0.6rem;
+  }
+  
+  .settings-section h2 {
+    font-size: 1.35rem; /* Augmenté */
+    margin-bottom: 1.25rem; /* Augmenté */
+    padding-bottom: 0.6rem; /* Augmenté */
+  }
+  
+  .setting-item {
+    padding: 1.25rem 0; /* Augmenté */
+    gap: 1rem; /* Augmenté */
+  }
+  
+  .setting-info h3 {
+    font-size: 1.15rem; /* Augmenté */
+    margin-bottom: 0.5rem; /* Augmenté */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  .setting-info p {
+    font-size: 0.95rem; /* Augmenté */
+    line-height: 1.6; /* Augmenté */
+    margin-top: 0.25rem;
+  }
+  
+  .btn {
+    padding: 0.8rem 1.2rem; /* Réduit */
+    font-size: 1.05rem; /* Augmenté */
+    border-radius: 0.5rem;
+    min-height: 60px; /* Augmenté significativement */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  .btn-small {
+    padding: 0.6rem 1rem; /* Réduit */
+    font-size: 0.95rem; /* Augmenté */
+    min-height: 52px; /* Augmenté */
+  }
+  
+  .language-selector {
+    gap: 0.85rem; /* Augmenté */
+  }
+  
+  .language-btn {
+    padding: 0.8rem 1.2rem; /* Réduit */
+    font-size: 1.05rem; /* Augmenté */
+    border-radius: 0.5rem;
+    min-height: 60px; /* Augmenté significativement */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  .switch {
+    width: 60px; /* Augmenté */
+    height: 36px; /* Augmenté */
+    margin-top: 0.5rem; /* Espacement augmenté */
+  }
+  
+  .slider:before {
+    height: 24px; /* Augmenté */
+    width: 24px; /* Augmenté */
+    left: 5px; /* Ajusté */
+    bottom: 5px; /* Ajusté */
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(24px); /* Ajusté */
+  }
+  
+  /* Password form adjustments */
+  .password-change-form .form-group {
+    margin-bottom: 1.5rem; /* Augmenté */
+  }
+  
+  .password-change-form label {
+    font-size: 1rem; /* Augmenté */
+    margin-bottom: 0.75rem; /* Augmenté */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  .password-change-form input {
+    padding: 0.8rem; /* Réduit */
+    font-size: 1.05rem; /* Augmenté */
+    border-radius: 0.5rem;
+    min-height: 60px; /* Augmenté significativement */
+    border-width: 2.5px; /* Un peu plus épais */
+  }
+  
+  .error-message {
+    font-size: 0.9rem; /* Augmenté */
+    margin-top: 0.5rem; /* Augmenté */
+  }
+  
+  .form-actions {
+    gap: 0.75rem; /* Augmenté */
+    margin-top: 1.5rem; /* Augmenté */
+  }
+  
+  .btn-submit,
+  .btn-cancel {
+    padding: 0.8rem 1.2rem; /* Réduit */
+    font-size: 1.05rem; /* Augmenté */
+    min-height: 60px; /* Augmenté significativement */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  /* User info responsive - Taille augmentée */
+  .user-info-hidden {
+    padding: 1.75rem 1rem; /* Augmenté */
+  }
+  
+  .user-info-hidden h3 {
+    font-size: 1.3rem; /* Augmenté */
+    margin-bottom: 0.75rem; /* Augmenté */
+  }
+  
+  .user-info-hidden p {
+    font-size: 1rem; /* Augmenté */
+    margin-bottom: 1.75rem; /* Augmenté */
+    line-height: 1.6; /* Augmenté */
+  }
+  
+  .user-info-row {
+    gap: 0.75rem; /* Augmenté */
+    padding: 1.15rem 0; /* Augmenté */
+  }
+  
+  .user-info-label {
+    font-size: 1.05rem; /* Augmenté */
+    font-weight: 700; /* Plus gras */
+  }
+  
+  .user-info-value {
+    font-size: 1.1rem; /* Augmenté */
+    padding-left: 0.75rem; /* Augmenté */
+    font-weight: 500;
+  }
+  
+  .user-info-actions {
+    padding-top: 1.5rem; /* Augmenté */
+  }
+  
+  /* Hide hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .settings-section:hover {
+      transform: none;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-submit:hover:not(:disabled),
+    .btn-cancel:hover,
+    .language-btn:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+  
+  /* Very small screens - Tailles augmentées */
+  @media (max-width: 360px) {
+    .settings-content {
+      padding: 0 1rem; /* Augmenté */
+    }
+    
+    .settings-section {
+      padding: 1.25rem; /* Augmenté */
+    }
+    
+    .btn,
+    .btn-submit,
+    .btn-cancel {
+      padding: 0.7rem 1rem; /* Réduit */
+      font-size: 1rem; /* Augmenté */
+      min-height: 58px; /* Augmenté */
+    }
+    
+    .user-info-row {
+      padding: 1rem 0; /* Augmenté */
+    }
+    
+    .setting-info h3 {
+      font-size: 1.1rem; /* Augmenté */
+    }
+    
+    .setting-info p {
+      font-size: 0.9rem; /* Augmenté */
+    }
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .settings-page {
+    padding: 1rem 0;
+    min-height: auto;
+  }
+  
+  .settings-section {
+    padding: 1.25rem;
+  }
+  
+  .setting-item {
+    padding: 1rem 0;
+  }
+  
+  .btn {
+    padding: 0.6rem 1rem;
+    min-height: 44px;
+  }
+  
+  .btn-small {
+    min-height: 40px;
+  }
+  
+  .password-change-form input {
+    min-height: 44px;
+    padding: 0.75rem;
+  }
+}
+
+/* Large desktops */
+@media (min-width: 1200px) {
+  .settings-content {
+    max-width: 900px;
+  }
+  
+  .settings-section {
+    padding: 2.5rem;
+  }
+  
+  .settings-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .setting-info h3 {
+    font-size: 1.3rem;
+  }
+  
+  .setting-info p {
+    font-size: 1rem;
+  }
+}
+
+/* Accessibilité : augmentation de la taille pour zoom */
+@media (max-width: 480px) and (min-resolution: 2dppx) {
+  .btn,
+  .btn-submit,
+  .btn-cancel,
+  .language-btn,
+  .password-change-form input {
+    min-height: 64px; /* Encore plus grand pour écrans haute résolution */
+  }
+  
+  .btn-small {
+    min-height: 56px;
   }
 }

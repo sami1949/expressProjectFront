@@ -14,6 +14,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   color: white;
+  position: relative;
 }
 
 .admin-welcome-card__title {
@@ -24,102 +25,45 @@
 }
 
 .admin-welcome-card__subtitle {
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-size: 1rem;
   opacity: 0.9;
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* Section des statistiques */
-.admin-dashboard__stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.admin-stat-card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: none;
-}
-
-.admin-stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
-}
-
-.admin-stat-card--users {
-  background: white;
-}
-
-.admin-stat-card--posts {
-  background: white;
-}
-
-.admin-stat-card--comments {
-  background: white;
-}
-
-.admin-stat-card--active {
-  background: white;
-}
-
-.admin-stat-card__content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-}
-
-.admin-stat-card__info {
-  flex: 1;
-}
-
-.admin-stat-card__label {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.875rem;
-  color: #6c757d;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.admin-stat-card__value {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #343a40;
-}
-
-.admin-stat-card__icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  background: #667eea;
+.admin-refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
   color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  margin-bottom: 0.5rem;
 }
 
-.admin-stat-card--users .admin-stat-card__icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.admin-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.admin-stat-card--posts .admin-stat-card__icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.admin-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.admin-stat-card--comments .admin-stat-card__icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.admin-error-message {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
 }
 
-.admin-stat-card--active .admin-stat-card__icon {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+/* Section des statistiques (dans un composant séparé) */
+.admin-dashboard__statistics {
+  margin-bottom: 2rem;
 }
 
 /* Section principale */
@@ -127,6 +71,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .admin-dashboard__activity {
@@ -135,6 +80,114 @@
 
 .admin-dashboard__actions {
   grid-column: 2;
+}
+
+/* Activité récente */
+.activity-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+  background-color: #f8f9fa;
+}
+
+.activity-item__icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  min-width: 2rem;
+}
+
+.activity-item__content {
+  flex: 1;
+}
+
+.activity-item__message {
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+  color: #343a40;
+}
+
+.activity-item__user {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.activity-item__time {
+  font-size: 0.75rem;
+  color: #adb5bd;
+  white-space: nowrap;
+}
+
+.activity-item--user {
+  border-left: 3px solid #667eea;
+}
+
+.activity-item--post {
+  border-left: 3px solid #f093fb;
+}
+
+.activity-item--comment {
+  border-left: 3px solid #4facfe;
+}
+
+.activity-item--report {
+  border-left: 3px solid #ff6b6b;
+}
+
+.activity-item--like {
+  border-left: 3px solid #ff6b6b;
+}
+
+.activity-item--share {
+  border-left: 3px solid #f093fb;
+}
+
+.activity-item--follow {
+  border-left: 3px solid #4facfe;
+}
+
+.activity-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.activity-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.activity-error {
+  text-align: center;
+  padding: 2rem;
+  color: #dc3545;
+}
+
+.activity-retry-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.activity-retry-btn:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
 /* Boutons d'actions rapides */
@@ -197,7 +250,50 @@
   background: linear-gradient(135deg, #e0a800 0%, #c99300 100%);
 }
 
+/* Section des utilisateurs */
+.admin-dashboard__users-section {
+  margin-top: 2rem;
+}
+
+/* Cartes admin */
+.admin-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border: none;
+  overflow: hidden;
+}
+
+.admin-card__header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.admin-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.admin-card__body {
+  padding: 1.5rem;
+}
+
+.admin-card__placeholder {
+  text-align: center;
+  color: #6c757d;
+  margin: 2rem 0;
+}
+
 /* Responsive design */
+@media (max-width: 1200px) {
+  .admin-dashboard__stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
 @media (max-width: 992px) {
   .admin-dashboard__main {
     grid-template-columns: 1fr;
@@ -209,7 +305,7 @@
   }
   
   .admin-dashboard__stats {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }
 
@@ -229,6 +325,21 @@
   .admin-dashboard__main {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .activity-item__icon {
+    margin-bottom: 0.5rem;
+  }
+  
+  .activity-item__time {
+    align-self: flex-end;
+    margin-top: 0.5rem;
   }
 }
 
