@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminDashboard from './AdminDashboard';
+import UsersManagement from './UsersManagement';
 import { authService } from '../services/authService';
 import './AdminTemplate.css';
 
@@ -14,24 +15,6 @@ const AdminTemplate = () => {
     // Get current user info
     const user = authService.getCurrentUser();
     setCurrentUser(user);
-    
-    // Scripts pour initialiser les composants Material Dashboard
-    const initializeScripts = () => {
-      if (typeof window !== 'undefined') {
-        // Initialiser les tooltips, popovers, etc.
-        if (window.bootstrap) {
-          const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-          tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new window.bootstrap.Tooltip(tooltipTriggerEl);
-          });
-        }
-      }
-    };
-
-    initializeScripts();
-    return () => {
-      // Cleanup si nécessaire
-    };
   }, []);
 
   const toggleSidebar = () => {
@@ -201,18 +184,7 @@ const AdminTemplate = () => {
         {/* Content */}
         <div className="admin-content">
           {activePage === 'dashboard' && <AdminDashboard />}
-          {activePage === 'users' && (
-            <div className="admin-card">
-              <div className="admin-card__header">
-                <h5 className="admin-card__title">👥 Gestion des utilisateurs</h5>
-              </div>
-              <div className="admin-card__body">
-                <p className="admin-card__placeholder">
-                  Interface de gestion des utilisateurs en cours de développement...
-                </p>
-              </div>
-            </div>
-          )}
+          {activePage === 'users' && <UsersManagement />}
           {activePage === 'posts' && (
             <div className="admin-card">
               <div className="admin-card__header">

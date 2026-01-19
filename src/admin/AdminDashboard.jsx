@@ -2,47 +2,141 @@ import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import api from '../services/api';
 import './AdminDashboard.css';
+import Statistics from './Statistics';
 
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalPosts: 0,
-    totalComments: 0,
-    activeUsers: 0
-  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
     
-    // Charger les statistiques admin
-    loadAdminStats();
+    // Charger les activités récentes
+    loadRecentActivity();
   }, []);
 
-  const loadAdminStats = async () => {
+  const loadRecentActivity = async () => {
     try {
-      const response = await api.get('/auth/admin-only');
+      console.log('Chargement des activités récentes...');
+      // Appeler l'API pour obtenir les vraies activités récentes
+      const response = await api.get('/auth/recent-activity');
+      console.log('Réponse de l\'API:', response.data);
+      
       if (response.data.success && response.data.data) {
-        setStats(response.data.data);
+        console.log('Activités reçues:', response.data.data);
+        setRecentActivity(response.data.data);
       } else {
         // Données par défaut si la réponse est vide
-        setStats({
-          totalUsers: 0,
-          totalPosts: 0,
-          totalComments: 0,
-          activeUsers: 0
-        });
+        console.log('Aucune activité reçue, utilisant données par défaut');
+        setRecentActivity([]);
       }
     } catch (error) {
-      console.error('Erreur lors du chargement des statistiques:', error);
-      // Données par défaut en cas d'erreur
-      setStats({
-        totalUsers: 0,
-        totalPosts: 0,
-        totalComments: 0,
-        activeUsers: 0
-      });
+      console.error('Erreur lors du chargement de l\'activité:', error);
+      console.error('Détails de l\'erreur:', error.response?.data || error.message);
+      
+      // Afficher un message d'erreur plus détaillé
+      let errorMessage = 'Erreur de chargement des activités';
+      if (error.response?.status === 403) {
+        errorMessage = 'Accès refusé : vous devez être administrateur';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Non autorisé : veuillez vous reconnecter';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Erreur serveur : veuillez réessayer plus tard';
+      } else if (error.code === 'ERR_NETWORK') {
+        errorMessage = 'Problème de connexion réseau';
+      }
+      
+      setError(errorMessage);
+      
+      // Utiliser des données de démonstration en cas d'erreur serveur
+      if (error.response?.status === 500) {
+        console.log('Utilisation de données de démonstration...');
+        setRecentActivity([
+          {
+            id: 'demo-1',
+            type: 'user',
+            message: 'Nouvel utilisateur enregistré',
+            user: 'Jean Dupont',
+            time: new Date().toLocaleString('fr-FR'),
+            timestamp: new Date()
+          },
+          {
+            id: 'demo-2',
+            type: 'post',
+            message: 'Nouvelle publication créée',
+            user: 'Marie Curie',
+            time: new Date(Date.now() - 3600000).toLocaleString('fr-FR'),
+            timestamp: new Date(Date.now() - 3600000)
+          },
+          {
+            id: 'demo-3',
+            type: 'comment',
+            message: 'Nouveau commentaire ajouté',
+            user: 'Pierre Martin',
+            time: new Date(Date.now() - 7200000).toLocaleString('fr-FR'),
+            timestamp: new Date(Date.now() - 7200000)
+          },
+          {
+            id: 'demo-4',
+            type: 'like',
+            message: 'Nouveau like ajouté',
+            user: 'Sophie Laurent',
+            time: new Date(Date.now() - 10800000).toLocaleString('fr-FR'),
+            timestamp: new Date(Date.now() - 10800000)
+          },
+          {
+            id: 'demo-5',
+            type: 'follow',
+            message: 'Nouveau suivi effectué',
+            user: 'Thomas Bernard',
+            time: new Date(Date.now() - 14400000).toLocaleString('fr-FR'),
+            timestamp: new Date(Date.now() - 14400000)
+          }
+        ]);
+      } else {
+        setRecentActivity([]);
+      }
+    } finally {
+      setLoading(false);
+      console.log('Fin du chargement, loading = false');
+    }
+  };
+
+  const refreshData = async () => {
+    console.log('Actualisation des données...');
+    setLoading(true);
+    setError(null);
+    await loadRecentActivity();
+  };
+
+  // Fonction pour obtenir l'icône en fonction du type d'activité
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'user': return '👤';
+      case 'post': return '📝';
+      case 'comment': return '💬';
+      case 'report': return '⚠️';
+      case 'like': return '👍';
+      case 'share': return '🔄';
+      case 'follow': return '👥';
+      default: return 'ℹ️';
+    }
+  };
+
+  // Fonction pour obtenir la couleur en fonction du type d'activité
+  const getActivityColor = (type) => {
+    switch (type) {
+      case 'user': return 'activity-item--user';
+      case 'post': return 'activity-item--post';
+      case 'comment': return 'activity-item--comment';
+      case 'report': return 'activity-item--report';
+      case 'like': return 'activity-item--like';
+      case 'share': return 'activity-item--share';
+      case 'follow': return 'activity-item--follow';
+      default: return '';
     }
   };
 
@@ -56,49 +150,24 @@ const AdminDashboard = () => {
           <p className="admin-welcome-card__subtitle">
             Panel d'administration - Gestion complète de la plateforme
           </p>
+          <button 
+            className="admin-refresh-btn"
+            onClick={refreshData}
+            disabled={loading}
+          >
+            {loading ? '🔄 Chargement...' : '🔄 Actualiser'}
+          </button>
+          {error && (
+            <div className="admin-error-message">
+              {error}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="admin-dashboard__stats">
-        <div className="admin-stat-card admin-stat-card--users">
-          <div className="admin-stat-card__content">
-            <div className="admin-stat-card__info">
-              <p className="admin-stat-card__label">Utilisateurs</p>
-              <h5 className="admin-stat-card__value">{stats.totalUsers}</h5>
-            </div>
-            <div className="admin-stat-card__icon">👥</div>
-          </div>
-        </div>
-
-        <div className="admin-stat-card admin-stat-card--posts">
-          <div className="admin-stat-card__content">
-            <div className="admin-stat-card__info">
-              <p className="admin-stat-card__label">Publications</p>
-              <h5 className="admin-stat-card__value">{stats.totalPosts}</h5>
-            </div>
-            <div className="admin-stat-card__icon">📝</div>
-          </div>
-        </div>
-
-        <div className="admin-stat-card admin-stat-card--comments">
-          <div className="admin-stat-card__content">
-            <div className="admin-stat-card__info">
-              <p className="admin-stat-card__label">Commentaires</p>
-              <h5 className="admin-stat-card__value">{stats.totalComments}</h5>
-            </div>
-            <div className="admin-stat-card__icon">💬</div>
-          </div>
-        </div>
-
-        <div className="admin-stat-card admin-stat-card--active">
-          <div className="admin-stat-card__content">
-            <div className="admin-stat-card__info">
-              <p className="admin-stat-card__label">Actifs (24h)</p>
-              <h5 className="admin-stat-card__value">{stats.activeUsers}</h5>
-            </div>
-            <div className="admin-stat-card__icon">⚡</div>
-          </div>
-        </div>
+      {/* Section des statistiques (dans un composant séparé) */}
+      <div className="admin-dashboard__statistics">
+        <Statistics />
       </div>
 
       <div className="admin-dashboard__main">
@@ -108,9 +177,43 @@ const AdminDashboard = () => {
               <h5 className="admin-card__title">📊 Activité récente</h5>
             </div>
             <div className="admin-card__body">
-              <p className="admin-card__placeholder">
-                Graphique d'activité en cours de développement...
-              </p>
+              {loading ? (
+                <div className="activity-loading">Chargement de l'activité...</div>
+              ) : error ? (
+                <div className="activity-error">
+                  <p>Impossible de charger les activités récentes</p>
+                  <button 
+                    className="activity-retry-btn"
+                    onClick={refreshData}
+                  >
+                    Réessayer
+                  </button>
+                </div>
+              ) : (
+                <div className="activity-list">
+                  {recentActivity.length > 0 ? (
+                    recentActivity.map(activity => (
+                      <div 
+                        key={activity.id || activity._id} 
+                        className={`activity-item ${getActivityColor(activity.type)}`}
+                      >
+                        <div className="activity-item__icon">
+                          {getActivityIcon(activity.type)}
+                        </div>
+                        <div className="activity-item__content">
+                          <p className="activity-item__message">{activity.message || activity.description}</p>
+                          <p className="activity-item__user">{activity.user || activity.username || 'System'}</p>
+                        </div>
+                        <div className="activity-item__time">
+                          {activity.time || activity.createdAt || activity.timestamp || 'Récemment'}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="activity-empty">Aucune activité récente</div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -122,11 +225,14 @@ const AdminDashboard = () => {
             </div>
             <div className="admin-card__body">
               <div className="admin-quick-actions">
-                <button className="admin-quick-btn admin-quick-btn--primary">
-                  Gérer les utilisateurs
+                <button 
+                  className="admin-quick-btn admin-quick-btn--primary"
+                  onClick={refreshData}
+                >
+                  Actualiser les données
                 </button>
                 <button className="admin-quick-btn admin-quick-btn--secondary">
-                  Modérer les publications
+                  Gérer les utilisateurs
                 </button>
                 <button className="admin-quick-btn admin-quick-btn--info">
                   Voir les rapports

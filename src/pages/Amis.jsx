@@ -416,7 +416,9 @@ const Amis = () => {
       <Navbar />
       
       <div className="amis-container">
-        <Sidebar />
+        <div className="sidebar-wrapper">
+          <Sidebar />
+        </div>
         
         <main className="amis-content">
           <h1 className="page-title">{t('friendsAndSubscriptions')}</h1>

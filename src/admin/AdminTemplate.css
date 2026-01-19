@@ -6,6 +6,7 @@
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Sidebar */
@@ -20,7 +21,8 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
+  transform: translateX(0); /* Remove transition for stability */
+  will-change: transform; /* Optimize for animation */
 }
 
 .admin-sidebar--open {
@@ -68,7 +70,6 @@
   background: none;
   border: none;
   border-radius: 0.25rem;
-  transition: all 0.3s ease;
 }
 
 .admin-sidebar__toggle-btn:hover {
@@ -104,7 +105,6 @@
   border-radius: 0.75rem;
   text-decoration: none;
   color: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -117,14 +117,12 @@
 .admin-nav__link:hover {
   color: white;
   background: rgba(255, 255, 255, 0.15);
-  transform: translateX(8px);
 }
 
 .admin-nav__link--active {
   color: white;
   background: linear-gradient(195deg, #ec407a 0%, #d81b60 100%);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transform: translateX(8px);
 }
 
 .admin-nav__icon {
@@ -137,12 +135,10 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
   font-size: 1.1rem;
-  transition: all 0.3s ease;
 }
 
 .admin-nav__link:hover .admin-nav__icon {
   background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
 }
 
 .admin-nav__link--active .admin-nav__icon {
@@ -204,13 +200,11 @@
   text-align: left;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.3s ease;
   width: 100%;
 }
 
 .admin-sidebar__logout-btn:hover {
   background: linear-gradient(195deg, #ff5252 0%, #e53935 100%);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(238, 90, 82, 0.3);
 }
 
@@ -223,12 +217,10 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
   font-size: 1.1rem;
-  transition: all 0.3s ease;
 }
 
 .admin-sidebar__logout-btn:hover .admin-sidebar__logout-icon {
   background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
 }
 
 .admin-sidebar__logout-text {
@@ -241,7 +233,8 @@
   display: flex;
   flex-direction: column;
   margin-left: 250px; /* Default margin when sidebar is open */
-  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  will-change: transform; /* Optimize for animation */
 }
 
 .admin-main--sidebar-closed {
@@ -306,7 +299,6 @@
   background: rgba(0, 0, 0, 0.05);
   width: 250px;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
 }
 
 .admin-search__input:focus {
@@ -340,14 +332,12 @@
   background: transparent;
   cursor: pointer;
   font-size: 1.2rem;
-  transition: all 0.3s ease;
   color: #495057;
 }
 
 .admin-icon-btn:hover {
   background: rgba(0, 0, 0, 0.05);
   color: #212529;
-  transform: translateY(-2px);
 }
 
 /* Content - Fixed to prevent sliding */
@@ -358,7 +348,8 @@
   border-radius: 1rem;
   background: white;
   min-height: calc(100vh - 8rem);
-  transition: none; /* Remove transition to prevent sliding */
+  overflow-x: auto;
+  will-change: transform; /* Optimize for animation */
 }
 
 /* Card */
@@ -458,6 +449,7 @@
   .admin-main {
     margin-left: 0;
     order: 1; /* Show main content first on mobile */
+    min-height: auto;
   }
   
   .admin-main--sidebar-closed {
@@ -490,12 +482,7 @@
   
   .admin-content {
     margin: 1rem;
-  }
-  
-  .admin-content--with-sidebar,
-  .admin-content--without-sidebar {
-    margin-left: 1rem;
-    margin-right: 1rem;
+    min-height: auto;
   }
   
   .admin-sidebar__header {

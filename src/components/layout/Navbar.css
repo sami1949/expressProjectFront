@@ -305,6 +305,28 @@
   margin-left: auto;
   box-shadow: 0 2px 8px rgba(240, 147, 251, 0.4);
 }
+/* Ajoutez à Navbar.css */
+.navbar-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.navbar-menu-button:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+@media (max-width: 1024px) {
+  .navbar-menu-button {
+    display: block;
+  }
+}
 
 /* Dark Mode Adjustments */
 body.dark-mode .navbar {

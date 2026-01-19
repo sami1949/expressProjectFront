@@ -86,13 +86,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="navbar-search">
-          <span className="search-icon">🔍</span>
-          <input 
-            type="text" 
-            placeholder={t('searchPlaceholder')}
-          />
-        </div>
+
 
         <div className="navbar-user">
           <DarkModeToggle />

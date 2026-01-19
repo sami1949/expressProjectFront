@@ -385,3 +385,41 @@
     justify-content: center;
   }
 }
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .publication-form {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  
+  .author-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .author-name {
+    font-size: 14px;
+  }
+  
+  .post-content {
+    padding: 12px 14px;
+    font-size: 14px;
+    min-height: 70px;
+  }
+  
+  .action-btn {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  
+  .publish-btn {
+    padding: 11px 20px;
+    font-size: 14px;
+  }
+  
+  .privacy-select {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}

@@ -17,6 +17,16 @@
   position: relative;
 }
 
+.sidebar-wrapper {
+  grid-column: 1;
+}
+
+.amis-content {
+  grid-column: 2;
+  width: 100%;
+  animation: fadeInUp 0.5s ease-out;
+}
+
 .amis-content {
   width: 100%;
   animation: fadeInUp 0.5s ease-out;
@@ -696,6 +706,16 @@ body.dark-mode .loading-spinner {
     padding: 20px;
   }
   
+  .sidebar-wrapper {
+    grid-column: auto;
+    display: none; /* Cacher le sidebar sur tablette */
+  }
+  
+  .amis-content {
+    grid-column: auto;
+    width: 100%;
+  }
+  
   .tabs {
     overflow-x: auto;
     justify-content: flex-start;
@@ -762,62 +782,217 @@ body.dark-mode .loading-spinner {
   }
 }
 
+@media (max-width: 768px) {
+  .amis-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .sidebar-wrapper {
+    display: none; /* Toujours cacher le sidebar sur mobile */
+  }
+  
+  .amis-content {
+    width: 100%;
+  }
+  
+  .tabs {
+    gap: 8px;
+    padding: 6px;
+    overflow-x: auto;
+  }
+  
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .tab-content {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+  
+  .user-card {
+    padding: 18px;
+  }
+  
+  .user-card-header {
+    gap: 12px;
+  }
+  
+  .user-avatar-container {
+    width: 52px;
+    height: 52px;
+  }
+  
+  .user-name {
+    font-size: 15px;
+  }
+  
+  .user-bio {
+    font-size: 12px;
+  }
+  
+  .follow-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 480px) {
   .amis-container {
     padding: 12px;
   }
   
   .page-title {
-    font-size: 22px;
-    margin-bottom: 20px;
+    font-size: 20px; /* Réduit pour petits écrans */
+    margin-bottom: 16px;
   }
   
   .tabs {
-    padding: 6px;
-    gap: 8px;
+    padding: 4px;
+    gap: 6px;
   }
   
   .tab {
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 10px;
+    padding: 7px 12px; /* Réduit pour petits écrans */
+    font-size: 13px;
+    border-radius: 8px;
   }
   
   .tab-content {
-    padding: 20px 16px;
+    padding: 16px 12px; /* Réduit pour petits écrans */
   }
   
   .user-card {
-    padding: 20px;
+    padding: 16px; /* Réduit pour petits écrans */
   }
   
   .user-avatar-container {
-    width: 56px;
-    height: 56px;
+    width: 48px; /* Réduit pour petits écrans */
+    height: 48px;
   }
   
   .user-name {
-    font-size: 16px;
+    font-size: 14px; /* Réduit pour petits écrans */
   }
   
   .user-bio {
-    font-size: 13px;
+    font-size: 11px; /* Réduit pour petits écrans */
   }
   
   .user-meta {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px; /* Réduit pour petits écrans */
   }
   
   .empty-state {
-    padding: 60px 20px;
+    padding: 40px 16px; /* Réduit pour petits écrans */
   }
   
   .empty-state h3 {
-    font-size: 20px;
+    font-size: 18px; /* Réduit pour petits écrans */
   }
   
   .empty-state p {
+    font-size: 13px; /* Réduit pour petits écrans */
+  }
+  
+  .search-input {
+    padding: 12px 16px; /* Réduit pour petits écrans */
     font-size: 14px;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    padding: 12px 16px; /* Réduit pour petits écrans */
+    font-size: 14px;
+  }
+  
+  .follow-btn {
+    padding: 7px 12px; /* Réduit pour petits écrans */
+    font-size: 11px;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 360px) {
+  .amis-container {
+    padding: 8px;
+  }
+  
+  .page-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .tabs {
+    padding: 2px;
+    gap: 4px;
+  }
+  
+  .tab {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .tab-content {
+    padding: 12px 8px;
+  }
+  
+  .user-card {
+    padding: 12px;
+  }
+  
+  .user-avatar-container {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+  }
+  
+  .user-bio {
+    font-size: 10px;
+  }
+  
+  .user-meta {
+    gap: 3px;
+  }
+  
+  .empty-state {
+    padding: 30px 12px;
+  }
+  
+  .empty-state h3 {
+    font-size: 16px;
+  }
+  
+  .empty-state p {
+    font-size: 12px;
+  }
+  
+  .search-input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .search-btn,
+  .reset-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .follow-btn {
+    padding: 6px 10px;
+    font-size: 10px;
   }
 }
